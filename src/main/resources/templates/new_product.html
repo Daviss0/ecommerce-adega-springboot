@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Novo Produto</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+
+        body {
+            background: #eef7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 22px;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #1e6fa8;
+            color: #fff;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 25px 18px;
+        }
+
+        .sidebar h4 {
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #eaf6ff;
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #eaf6ff;
+            width: 100%;
+            text-align: left;
+            padding: 12px 10px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .page-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            margin-bottom: 22px;
+        }
+
+        .form-card {
+            background: #fff;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-header {
+            padding: 18px;
+            border-bottom: 1px solid #e3edf5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb-area {
+            font-size: 13px;
+            color: #556;
+        }
+
+        .breadcrumb-area a {
+            color: #0d6efd;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-body {
+            padding: 22px 18px;
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #102a43;
+            margin-bottom: 4px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .upload-box {
+            border: 2px dashed #9ec5fe;
+            border-radius: 10px;
+            height: 145px;
+            cursor: pointer;
+            background: #f8fbff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #0d6efd;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            background: #eef6ff;
+        }
+
+        .upload-box i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .upload-box small {
+            color: #64748b;
+        }
+
+        .preview-img {
+            max-height: 130px;
+            max-width: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2d3d;
+        }
+
+        .form-control,
+        .form-select {
+
+            height: 42px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-footer {
+            background: #fafcff;
+            border-top: 1px solid #e3edf5;
+            padding: 14px 18px;
+            display: flex;
+
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-save {
+            background: linear-gradient(90deg, #24c6dc, #4776e6);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+            color: #fff;
+        }
+
+        .text-danger {
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<aside class="sidebar">
+    <h4>Adega Admin</h4>
+
+    <a th:href="@{/admin/home_adm}" class="menu-item">
+        <i class="bi bi-grid-fill"></i>
+        Dashboard
+    </a>
+
+    <a th:href="@{/admin/products}" class="menu-item active">
+        <i class="bi bi-box-seam"></i>
+        Produtos
+    </a>
+
+    <a th:href="@{/admin/clients}" class="menu-item">
+        <i class="bi bi-people-fill"></i>
+        Clientes
+    </a>
+
+    <a href="#" class="menu-item">
+        <i class="bi bi-cart-check-fill"></i>
+        Pedidos
+    </a>
+
+    <a href="#" class="menu-item">
+        <i class="bi bi-clipboard-data-fill"></i>
+        Estoque
+    </a>
+
+    <a href="#" class="menu-item">
+        <i class="bi bi-person-gear"></i>
+        Usuários
+    </a>
+
+    <form th:action="@{/logout}" method="post" class="mt-5">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <button type="submit" class="logout-btn">
+            <i class="bi bi-box-arrow-right"></i>
+            Sair
+        </button>
+    </form>
+</aside>
+
+<div class="main-content">
+
+    <div class="page-card d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-0">Produtos</h4>
+            <small>Adicionar um novo produto no sistema</small>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <div class="breadcrumb-area">
+                <a th:href="@{/admin/products}">Produtos</a>
+                <span class="mx-2">></span>
+                <span>Novo Produto</span>
+            </div>
+
+
+            <a th:href="@{/admin/products}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+
+        <form th:action="@{/admin/products/save}"
+              th:object="${product}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div class="form-body">
+
+                <h5 class="form-title">Adicionar Novo Produto</h5>
+                <p class="form-subtitle">Preencha os dados abaixo para cadastrar um novo produto</p>
+
+                <div class="mb-4">
+                    <label class="form-label">Imagem do Produto</label>
+
+                    <label class="upload-box" for="imageFile">
+                        <div id="uploadContent">
+                            <i class="bi bi-cloud-upload"></i>
+                            <strong>Clique para selecionar uma imagem</strong><br>
+                            <small>PNG, JPG ou WEBP (máx. 5MB)</small>
+                        </div>
+
+                        <img id="previewImage" class="preview-img" alt="Prévia da imagem">
+                    </label>
+
+                    <input type="file"
+                    id="imageFile"
+                    name="imageFile"
+                    accept="image/png, image/jpeg, image/webp"
+                    hidden
+                    onchange="previewImageFile(event)">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nome do Produto</label>
+                    <input type="text"
+                    class="form-control"
+                    th:field="*{name}">
+
+
+                    <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" th:field="*{category}">
+                        <option value="">Selecione a categoria</option>
+                        <option value="Cervejas">Cervejas</option>
+                        <option value="Vinhos">Vinhos</option>
+                        <option value="Destilados">Destilados</option>
+                        <option value="Refrigerantes">Refrigerantes</option>
+                        <option value="Energéticos">Energéticos</option>
+                        <option value="Água">Água</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+
+                    <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Preço (R$)</label>
+                            <input type="number"
+                            class="form-control"
+                            th:field="*{price}"
+                            step="0.01"
+                            min="0.01"
+                            placeholder="0,00">
+
+                            <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Estoque</label>
+                            <input type="number"
+                            class="form-control"
+                            th:field="*{stock}"
+                            min="0"
+                            placeholder="0">
+
+                            <div class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="form-footer">
+                    <a th:href="@{/admin/products}" class="btn btn-outline-secondary">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-save">
+                        <i class="bi bi-save"></i>
+                        Salvar Produto
+                    </button>
+                </div>
+
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+
+    function previewImageFile(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('previewImage');
+        const uploadContent = document.getElementById('uploadContent');
+
+        if(file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+            uploadContent.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
