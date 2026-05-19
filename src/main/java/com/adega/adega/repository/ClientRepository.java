@@ -1,7 +1,7 @@
 package com.adega.adega.repository;
 
 import com.adega.adega.entity.Client;
-import com.adega.adega.entity.Users;
+import com.adega.adega.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ public interface ClientRepository extends JpaRepository <Client, Long> {
 
     Optional<Client> findByCpf(String cpf);
 
-    Optional<Client> findByUser(Users user);
+    Optional<Client> findByUser(User user);
 
     List<Client> findByUser_ActiveTrue();
 

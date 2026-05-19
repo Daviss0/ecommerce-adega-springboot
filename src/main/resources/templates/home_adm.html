@@ -91,6 +91,20 @@
             transform: translateY(-5px);
         }
 
+        .dashboard-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .dashboard-link:hover {
+            color: inherit;
+        }
+
+        .dashboard-link .dashboard-card {
+            cursor: pointer;
+        }
+
         .card-blue {
             background: linear-gradient(135deg, #35c4d9, #5a83e6);
         }
@@ -157,7 +171,7 @@
         Estoque
     </a>
 
-    <a href="#" class="menu-item">
+    <a th:href="@{/admin/users}" class="menu-item">
         <i class="bi bi-person-gear"></i>
         Usuários
     </a>
@@ -236,13 +250,15 @@
         </div>
 
         <div class="col-md-4">
-            <div class="dashboard-card card-blue">
-                <div class="card-icon">
-                    <i class="bi bi-person-gear"></i>
+            <a th:href="@{/admin/users}" class="dashboard-link">
+                <div class="dashboard-card card-blue">
+                    <div class="card-icon">
+                        <i class="bi bi-person-gear"></i>
+                    </div>
+                    <h5>Usuários</h5>
+                    <p class="mb-0">Gerenciar administradores e funcionários</p>
                 </div>
-                <h5>Usuários</h5>
-                <p class="mb-0">Gerenciar administradores e funcionários</p>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">

@@ -1,20 +1,20 @@
 package com.adega.adega.service;
 
 
-import com.adega.adega.entity.Users;
+import com.adega.adega.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
 
-    List<Users> findInternalUsers();
+    List<User> findInternalUsers();
 
-    List<Users> searchInternalUsers(String keyword);
+    List<User> searchInternalUsers(String keyword);
 
-    Optional<Users> findById(Long id);
+    Optional<User> findById(Long id);
 
-    Users save(Users user);
+    User save(User user);
 
     void deactivateUser(Long id);
 

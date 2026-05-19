@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +34,9 @@ public class Users {
 
 
     //constructors
-    public Users(){}
+    public User(){}
 
-    public Users(Long id, String name, String password, String email, Role role, Boolean active) {
+    public User(Long id, String name, String password, String email, Role role, Boolean active) {
         this.id = id;
         this.name = name;
         this.password = password;

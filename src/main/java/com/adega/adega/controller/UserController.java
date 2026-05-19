@@ -1,10 +1,9 @@
 package com.adega.adega.controller;
 
 
-import com.adega.adega.entity.Users;
+import com.adega.adega.entity.User;
 import com.adega.adega.enumerated.Role;
 import com.adega.adega.service.UserService;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class UserController {
     public String listUsers(@RequestParam(value = "keyword",required = false) String keyword,
                             Model model) {
 
-        List<Users> users = userService.searchInternalUsers(keyword);
+        List<User> users = userService.searchInternalUsers(keyword);
 
         model.addAttribute("users", users);
         model.addAttribute("keyword", keyword);
@@ -36,14 +35,14 @@ public class UserController {
 
     @GetMapping("/new")
     public String newUser(Model model) {
-        model.addAttribute("user", new Users());
+        model.addAttribute("user", new User());
         model.addAttribute("roles", List.of(Role.ADMIN, Role.EMPLOYEE));
 
         return "form_user";
     }
 
     @PostMapping("/save")
-    public String saveUser(@ModelAttribute Users users,
+    public String saveUser(@ModelAttribute User users,
                            RedirectAttributes redirectAttributes) {
 
         userService.save(users);
@@ -56,10 +55,10 @@ public class UserController {
     public String editUser(@PathVariable Long id,
                            Model model,
                            RedirectAttributes redirectAttributes) {
-        Users user = userService.findById(id)
+        User user = userService.findById(id)
                 .orElse(null);
 
-        if(user == null || user.getRole() != Role.CLIENT) {
+        if(user == null || user.getRole() == Role.CLIENT) {
             redirectAttributes.addFlashAttribute("errorMessage","Usuário não encontrado");
             return "redirect:/admin/users";
         }

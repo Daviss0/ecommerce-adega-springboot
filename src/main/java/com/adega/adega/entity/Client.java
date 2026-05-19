@@ -21,7 +21,7 @@ public class Client {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private Users user;
+    private User user;
 
     @NotBlank(message = "O CPF é obrigatório")
     @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
@@ -70,9 +70,9 @@ public class Client {
 
     public void setId(Long id) {this.id = id;}
 
-    public Users getUser() {return user;}
+    public User getUser() {return user;}
 
-    public void setUser(Users user) {this.user = user;}
+    public void setUser(User user) {this.user = user;}
 
     public String getCpf() {return cpf;}
 

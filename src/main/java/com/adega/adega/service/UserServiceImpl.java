@@ -1,7 +1,7 @@
 package com.adega.adega.service;
 
 
-import com.adega.adega.entity.Users;
+import com.adega.adega.entity.User;
 import com.adega.adega.enumerated.Role;
 import com.adega.adega.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,18 +24,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<Users> findInternalUsers() {
+    public List<User> findInternalUsers() {
         return userRepository.findByRoleIn(internalRoles);
     }
 
     @Override
-    public List<Users> searchInternalUsers(String keyword) {
+    public List<User> searchInternalUsers(String keyword) {
         if(keyword == null || keyword.trim().isEmpty()) {
             return findInternalUsers();
         }
 
-        List<Users> byName = userRepository.findByRoleInAndNameContainingIgnoreCase(internalRoles, keyword);
-        List<Users> byEmail = userRepository.findByRoleInAndEmailContainingIgnoreCase(internalRoles, keyword);
+        List<User> byName = userRepository.findByRoleInAndNameContainingIgnoreCase(internalRoles, keyword);
+        List<User> byEmail = userRepository.findByRoleInAndEmailContainingIgnoreCase(internalRoles, keyword);
 
         byName.addAll(byEmail);
 
@@ -45,39 +45,52 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<Users> findById(Long id) {
+    public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
-    public Users save(Users user) {
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public User save(User user) {
+
+        if(user.getId() == null) {
+            User existingUser = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setRole(user.getRole());
+            existingUser.setActive(user.getActive());
+
+            if(user.getPassword() != null && !user.getPassword().isBlank()) {
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
+            return userRepository.save(existingUser);
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if(user.getActive() == null) {
             user.setActive(true);
         }
-
         return userRepository.save(user);
-    }
-
-    @Override
-    public void deactivateUser(Long id) {
-      Users user = userRepository.findById(id)
-              .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-      user.setActive(false);
-      userRepository.save(user);
     }
 
 
     @Override
     public void activateUser(Long id) {
-      Users user = userRepository.findById(id)
+      User user = userRepository.findById(id)
               .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
       user.setActive(true);
       userRepository.save(user);
+    }
+
+    @Override
+    public void deactivateUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        user.setActive(false);
+        userRepository.save(user);
     }
 }

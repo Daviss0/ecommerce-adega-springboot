@@ -1,6 +1,6 @@
 package com.adega.adega.config;
 
-import com.adega.adega.entity.Users;
+import com.adega.adega.entity.User;
 import com.adega.adega.enumerated.Role;
 import com.adega.adega.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +21,7 @@ public class DataInitializer  implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if(userRepository.findByEmail("admin@adega.com").isEmpty()) {
-            Users admin = new Users();
+            User admin = new User();
 
             admin.setName("Adminitrador");
             admin.setEmail("admin@adega.com");
