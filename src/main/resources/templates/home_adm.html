@@ -197,8 +197,9 @@
     </div>
 
     <div class="row g-4 mb-4">
+
         <div class="col-md-4">
-            <a th:href="@{/admin/products}" class="text-decoration-none">
+            <a th:href="@{/admin/products}" class="dashboard-link">
                 <div class="dashboard-card card-blue">
                     <div class="card-icon">
                         <i class="bi bi-box-seam"></i>
@@ -210,19 +211,13 @@
         </div>
 
         <div class="col-md-4">
-            <a th:href="@{/admin/clients}"
-               style="text-decoration: none; color: inherit;">
-
+            <a th:href="@{/admin/clients}" class="dashboard-link">
                 <div class="dashboard-card card-dark-blue">
                     <div class="card-icon">
                         <i class="bi bi-people-fill"></i>
                     </div>
-
                     <h5>Clientes</h5>
-
-                    <p class="mb-0">
-                        Visualizar e gerenciar clientes
-                    </p>
+                    <p class="mb-0">Visualizar e gerenciar clientes</p>
                 </div>
             </a>
         </div>
@@ -236,17 +231,17 @@
                 <p class="mb-0">Acompanhar pedidos realizados</p>
             </div>
         </div>
-    </div>
 
-    <div class="row g-4">
         <div class="col-md-4">
-            <div class="dashboard-card card-dark-blue">
-                <div class="card-icon">
-                    <i class="bi bi-clipboard-data-fill"></i>
+            <a th:href="@{/admin/stock}" class="dashboard-link">
+                <div class="dashboard-card card-dark-blue">
+                    <div class="card-icon">
+                        <i class="bi bi-clipboard-data-fill"></i>
+                    </div>
+                    <h5>Estoque</h5>
+                    <p class="mb-0">Controlar entrada e saída</p>
                 </div>
-                <h5>Estoque</h5>
-                <p class="mb-5">Controlar entrada e saída</p>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
@@ -270,6 +265,7 @@
                 <p class="mb-0">Visualizar dados do sistema</p>
             </div>
         </div>
+
     </div>
 
 </main>
