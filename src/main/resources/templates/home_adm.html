@@ -146,7 +146,7 @@
 <aside class="sidebar">
     <h4>Adega Admin</h4>
 
-    <a href="/admin/home_adm" class="menu-item">
+    <a href="/admin/home_adm" class="menu-item active">
         <i class="bi bi-grid-fill"></i>
         Dashboard
     </a>
@@ -161,12 +161,12 @@
         Clientes
     </a>
 
-    <a href="#" class="menu-item">
+    <a th:href="@{/admin/orders}" class="menu-item">
         <i class="bi bi-cart-check-fill"></i>
         Pedidos
     </a>
 
-    <a href="#" class="menu-item">
+    <a th:href="@{/admin/stock}" class="menu-item">
         <i class="bi bi-clipboard-data-fill"></i>
         Estoque
     </a>
@@ -223,13 +223,17 @@
         </div>
 
         <div class="col-md-4">
-            <div class="dashboard-card card-dark-blue">
-                <div class="card-icon">
-                    <i class="bi bi-cart-check-fill"></i>
+            <a th:href="@{/admin/orders}" class="text-decoration-none">
+                <div class="dashboard-card card-dark-blue">
+                    <div class="card-icon">
+                        <i class="bi bi-cart-check-fill"></i>
+                    </div>
+                    <h5>Pedidos</h5>
+                    <p class="mb-0">
+                        Acompanhar pedidos realizados
+                    </p>
                 </div>
-                <h5>Pedidos</h5>
-                <p class="mb-0">Acompanhar pedidos realizados</p>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
