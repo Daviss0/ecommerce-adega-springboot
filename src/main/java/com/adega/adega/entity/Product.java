@@ -46,6 +46,9 @@ public class Product {
     @Column(name = "image_data", columnDefinition = "LONGBLOB") //força o banco a armazenar arquivos binários maiores
     private byte[] imageData;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean active = true;
+
     //constructors
     public Product() {
         this.status = true;
@@ -100,5 +103,7 @@ public class Product {
 
     public void setImageData(byte[] imageData) {this.imageData = imageData;}
 
+    public Boolean getActive() {return active;}
 
+    public void setActive(Boolean active) {this.active = active;}
 }

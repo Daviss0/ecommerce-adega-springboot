@@ -1,10 +1,8 @@
 package com.adega.adega.config;
 
 import com.adega.adega.repository.UserRepository;
-import org.hibernate.annotations.OnDelete;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -25,15 +23,20 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
+
                         .requestMatchers(
+                                "/",
+                                "/store/**",
+                                "/products/image/**",
                                 "/login_adm",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**"
                         ).permitAll()
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/client/**").hasRole("CLIENT")
-                        .requestMatchers("/admin/clients/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

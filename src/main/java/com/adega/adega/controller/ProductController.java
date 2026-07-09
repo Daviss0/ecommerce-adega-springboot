@@ -99,7 +99,7 @@ public class ProductController {
     @RequestParam ("imageFile") MultipartFile imageFile,
                                Model model) {
       if (result.hasErrors()) {
-          return "/new_product";
+          return "new_product";
       }
 
       try {
@@ -123,14 +123,14 @@ public class ProductController {
               product.setImageData(imageFile.getBytes());
           }
 
-          product.setStatus(true);
+          product.setActive(true);
 
           productRepository.save(product);
           return "redirect:/admin/products";
 
       } catch (IOException e) {
           model.addAttribute("errorMessage", "Erro ao salvar imagem do produto");
-          return "/new_product";
+          return "new_product";
       }
 
     }
