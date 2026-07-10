@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Admin;
 
 
 import com.adega.adega.entity.User;
@@ -30,7 +30,7 @@ public class UserController {
         model.addAttribute("users", users);
         model.addAttribute("keyword", keyword);
 
-        return "list_users";
+        return "admin/list_users";
     }
 
     @GetMapping("/new")
@@ -38,7 +38,7 @@ public class UserController {
         model.addAttribute("user", new User());
         model.addAttribute("roles", List.of(Role.ADMIN, Role.EMPLOYEE));
 
-        return "form_user";
+        return "admin/form_user";
     }
 
     @PostMapping("/save")
@@ -68,7 +68,7 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("roles", List.of(Role.ADMIN, Role.EMPLOYEE));
 
-        return  "form_user";
+        return  "admin/form_user";
     }
 
     @PostMapping("/activate/{id}")

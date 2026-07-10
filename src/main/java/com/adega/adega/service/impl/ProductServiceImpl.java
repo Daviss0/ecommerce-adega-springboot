@@ -1,14 +1,15 @@
-package com.adega.adega.service;
+package com.adega.adega.service.impl;
 
 import com.adega.adega.entity.Product;
 import com.adega.adega.repository.ProductRepository;
+import com.adega.adega.service.ProductService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 

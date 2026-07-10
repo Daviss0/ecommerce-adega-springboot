@@ -1,15 +1,16 @@
-package com.adega.adega.service;
+package com.adega.adega.service.impl;
 
 
 import com.adega.adega.entity.Client;
 import com.adega.adega.repository.ClientRepository;
+import com.adega.adega.service.ClientService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
 
 
     final ClientRepository clientRepository;

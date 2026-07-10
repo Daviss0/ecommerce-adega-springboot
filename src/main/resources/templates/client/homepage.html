@@ -40,6 +40,10 @@
             background: white;
             padding: 18px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
         .hero-carousel {
@@ -348,12 +352,28 @@
 </nav>
 
 <section class="hero-carousel">
-    <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div id="promoCarousel"
+         class="carousel slide"
+         data-bs-ride="carousel"
+         data-bs-interaval="5000"
+         data-bs-pause="false"
+         data-bs-wrap="true">
 
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active"></button>
             <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" ></button>
             <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="2" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="3" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="4" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="5" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="6" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="7" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="8" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="9" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="10" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="11" ></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="12" ></button>
+
         </div>
 
         <div class="carousel-inner">

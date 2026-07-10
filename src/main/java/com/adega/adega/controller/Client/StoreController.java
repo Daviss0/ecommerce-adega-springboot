@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Client;
 
 import com.adega.adega.entity.Product;
 import com.adega.adega.repository.ProductRepository;
@@ -9,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.print.attribute.standard.Media;
 
 @Controller
 @RequestMapping("/store")

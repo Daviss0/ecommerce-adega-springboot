@@ -1,15 +1,16 @@
-package com.adega.adega.service;
+package com.adega.adega.service.impl;
 
 import com.adega.adega.entity.Order;
 import com.adega.adega.enumerated.OrderStatus;
 import com.adega.adega.repository.OrderRepository;
+import com.adega.adega.service.OrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 

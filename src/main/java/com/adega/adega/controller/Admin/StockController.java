@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Admin;
 
 
 import com.adega.adega.service.StockService;
@@ -22,7 +22,7 @@ public class StockController {
     @GetMapping
     public String stockPage(Model model) {
         model.addAttribute("products", stockService.listProductsStock());
-        return "stock";
+        return "admin/stock";
     }
 
     @PostMapping("/add/{id}")
@@ -69,6 +69,6 @@ public class StockController {
     @GetMapping("/movements")
     public String movementsPage(Model model) {
         model.addAttribute("movements", stockService.listMovements());
-        return "stock_movements";
+        return "admin/stock_movements";
     }
 }

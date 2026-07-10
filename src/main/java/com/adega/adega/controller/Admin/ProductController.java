@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Admin;
 
 import com.adega.adega.entity.Product;
 import com.adega.adega.repository.ProductRepository;
@@ -38,7 +38,7 @@ public class ProductController {
     @GetMapping("/new")
     public String newProduct(Model model) {
         model.addAttribute("product", new Product());
-        return "new_product";
+        return "admin/new_product";
     }
 
 
@@ -57,7 +57,7 @@ public class ProductController {
         model.addAttribute("products", products);
         model.addAttribute("keyword", keyword);
 
-        return "products";
+        return "admin/products";
     }
 
     @GetMapping("/image/{id}")
@@ -79,7 +79,7 @@ public class ProductController {
         Product product = productService.findById(id);
 
         model.addAttribute("product", product);
-        return "edit_product";
+        return "admin/edit_product";
     }
 
     @PostMapping("/update/{id}")

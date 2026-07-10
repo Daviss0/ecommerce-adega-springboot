@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Admin;
 
 import com.adega.adega.entity.Order;
 import com.adega.adega.enumerated.OrderStatus;
@@ -35,7 +35,7 @@ public class OrderController {
         model.addAttribute("statuses", OrderStatus.values());
         model.addAttribute("selectedStatus", status);
 
-        return "orders";
+        return "admin/orders";
     }
 
     @PostMapping("/status/{id}")

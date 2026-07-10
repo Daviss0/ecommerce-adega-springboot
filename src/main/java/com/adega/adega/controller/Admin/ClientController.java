@@ -1,4 +1,4 @@
-package com.adega.adega.controller;
+package com.adega.adega.controller.Admin;
 
 
 import com.adega.adega.entity.Client;
@@ -29,7 +29,7 @@ public class ClientController {
         model.addAttribute("clients", clients);
         model.addAttribute("keyword", keyword);
 
-        return "list_clients";
+        return "admin/list_clients";
     }
 
     @PostMapping("/delete/{id}")

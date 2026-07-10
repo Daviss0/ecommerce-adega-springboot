@@ -1,4 +1,4 @@
-package com.adega.adega.service;
+package com.adega.adega.service.impl;
 
 
 import com.adega.adega.entity.Product;
@@ -6,13 +6,14 @@ import com.adega.adega.entity.StockMovement;
 import com.adega.adega.enumerated.StockMovementType;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.repository.StockMovementRepository;
+import com.adega.adega.service.StockService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class StockServiceImpl implements StockService{
+public class StockServiceImpl implements StockService {
 
     private final StockMovementRepository stockMovementRepository;
     private final ProductRepository productRepository;
