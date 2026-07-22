@@ -23,7 +23,7 @@ public class StoreController {
     @GetMapping({"", "/", "/homepage"})
     public String home(Model model) {
         model.addAttribute("product", productRepository.findByActiveTrue());
-        return "homepage";
+        return "client/homepage";
     }
 
     @GetMapping("/products/image/{id}")

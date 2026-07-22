@@ -12,11 +12,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/clients")
-public class ClientController {
+public class AdminClientController {
 
     private final ClientService clientService;
 
-    public ClientController(ClientService clientService) {
+    public AdminClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
@@ -37,10 +37,10 @@ public class ClientController {
                                RedirectAttributes redirectAttributes) {
         try {
             clientService.deactivateClient(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Cliente excluido com sucesso!");
+            redirectAttributes.addFlashAttribute("successMessage", "Cliente desativado com sucesso!");
         }
-        catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Cliente não encontrado.");
+        catch (RuntimeException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
         }
         return "redirect:/admin/clients";
     }

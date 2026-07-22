@@ -16,26 +16,38 @@ import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 @Configuration
 public class SecurityConfig {
 
+    private final CustomAuthenticationSuccessHandler successHandler;
+
+    public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
+        this.successHandler = successHandler;
+    }
+
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers(PathRequest.toH2Console())
+                        .permitAll()
 
                         .requestMatchers(
                                 "/",
                                 "/store/**",
                                 "/products/image/**",
                                 "/login_adm",
+                                "/client/register",
+                                "/error",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**"
                         ).permitAll()
 
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/client/**").hasRole("CLIENT")
+                        .requestMatchers("/admin/**")
+                        .hasAnyRole("ADMIN", "EMPLOYEE")
+
+                        .requestMatchers("/client/**")
+                        .hasRole("CLIENT")
 
                         .anyRequest().authenticated()
                 )
@@ -45,14 +57,17 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/admin/home_adm", true)
+                        .successHandler(successHandler)
                         .failureUrl("/login_adm?error=true")
                         .permitAll()
                 )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login_adm?logout=true")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
                         .permitAll()
                 )
 
@@ -73,7 +88,7 @@ public class SecurityConfig {
             var user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-            if(!user.getActive()) {
+            if(!Boolean.TRUE.equals(user.getActive())) {
                 throw new DisabledException("Usuário inativo");
             }
 
@@ -81,6 +96,7 @@ public class SecurityConfig {
                     .username(user.getEmail())
                     .password(user.getPassword())
                     .roles(user.getRole().name())
+                    .disabled(!Boolean.TRUE.equals(user.getActive()))
                     .build();
         };
     }

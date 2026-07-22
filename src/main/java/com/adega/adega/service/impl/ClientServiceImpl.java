@@ -1,11 +1,21 @@
 package com.adega.adega.service.impl;
 
 
+import com.adega.adega.dto.client.ClientRegistrationDTO;
+import com.adega.adega.dto.client.ClientResponseDTO;
+import com.adega.adega.dto.client.ClientUpdateDTO;
 import com.adega.adega.entity.Client;
+import com.adega.adega.entity.User;
+import com.adega.adega.mapper.ClientMapper;
 import com.adega.adega.repository.ClientRepository;
+import com.adega.adega.repository.UserRepository;
+import com.adega.adega.service.CepValidationService;
 import com.adega.adega.service.ClientService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,47 +23,244 @@ import java.util.Optional;
 public class ClientServiceImpl implements ClientService {
 
 
-    final ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
+    private final UserRepository userRepository;
+    private final ClientMapper clientMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final CepValidationService  cepValidationService;
 
-    public ClientServiceImpl(ClientRepository clientRepository) {
+    public ClientServiceImpl(ClientRepository clientRepository,
+                             UserRepository userRepository,
+                             ClientMapper clientMapper,
+                             PasswordEncoder passwordEncoder,
+                             CepValidationService cepValidationService) {
         this.clientRepository = clientRepository;
+        this.userRepository = userRepository;
+        this.clientMapper = clientMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.cepValidationService = cepValidationService;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Client> findAllActive() {
         return clientRepository.findByUser_ActiveTrue();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Client> search(String keyword) {
         if(keyword == null || keyword.trim().isEmpty()) {
             return findAllActive();
         }
 
-        List<Client> byName = clientRepository.findByUser_NameContainingIgnoreCase(keyword);
-        List<Client> byEmail = clientRepository.findByUser_EmailContainingIgnoreCase(keyword);
-        List<Client> byCpf = clientRepository.findByCpfContaining(keyword);
+       String normalizedKeyword = keyword.trim();
 
-        byName.addAll(byEmail);
-        byName.addAll(byCpf);
+        List<Client> byName =
+                clientRepository.findByUser_NameContainingIgnoreCase(
+                        normalizedKeyword
+                );
 
-        return byName.stream()
-                .distinct()
-                .filter(client -> Boolean.TRUE.equals(client.getUser().getActive()))
-                .toList();
+        List<Client> byEmail =
+                clientRepository.findByUser_EmailContainingIgnoreCase(
+                        normalizedKeyword
+                );
+
+        List<Client> byCpf =
+                clientRepository.findByCpfContaining(
+                        normalizedKeyword
+                );
+
+        List<Client> results = new ArrayList<>(byName);
+
+       results.addAll(byEmail);
+       results.addAll(byCpf);
+
+       return results.stream()
+               .distinct()
+               .filter(client ->
+                       client.getUser() != null
+               && Boolean.TRUE.equals(client.getUser().getActive()))
+               .toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Client> findById(Long id) {
         return clientRepository.findById(id);
     }
 
     @Override
+    @Transactional
     public void deactivateClient(Long id) {
       Client client = clientRepository.findById(id)
               .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-      client.getUser().setActive(false);
-      clientRepository.save(client);
+      User user = client.getUser();
+
+      if(user == null) {
+          throw new RuntimeException("Usuário relacionado ao cliente não encontrado");
+      }
+
+      user.setActive(false);
+
+      userRepository.save(user);
+    }
+
+
+    @Override
+    @Transactional
+    public ClientResponseDTO register(ClientRegistrationDTO dto) {
+        validateRegistration(dto);
+
+        String normalizedEmail = dto.getEmail().trim().toLowerCase();
+
+        String normalizedCpf = onlyNumbers(dto.getCpf());
+
+        String normalizedPhone = onlyNumbers(dto.getPhone());
+
+        if(userRepository.findByEmail(normalizedEmail).isPresent()) {
+            throw new IllegalArgumentException(
+                    "Já existe um usuário cadastrado com esse e-mail"
+            );
+        }
+
+        if(clientRepository.existsByCpf(normalizedCpf)) {
+            throw new IllegalArgumentException(
+                    "Já existe um cliente cadastrado com esse CPF"
+            );
+        }
+
+        dto.setEmail(normalizedEmail);
+        dto.setCpf(normalizedCpf);
+        dto.setPhone(normalizedPhone);
+
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+
+        User user = clientMapper.toUser(dto, encodedPassword);
+
+        User savedUser = userRepository.save(user);
+
+        Client client = clientMapper.toClient(dto, savedUser);
+
+        Client savedClient = clientRepository.save(client);
+
+        return clientMapper.toResponseDTO(savedClient);
+    }
+
+
+    //exibição da pagina minha conta
+    @Override
+    @Transactional(readOnly = true)
+    public ClientResponseDTO findByEmail(String email) {
+        Client client = findClientByEmail(email);
+
+        return clientMapper.toResponseDTO(client);
+    }
+
+
+    //preenchimento do formulario de edição
+    @Override
+    @Transactional(readOnly = true)
+    public ClientUpdateDTO getUpdateData(String email) {
+        Client client = findClientByEmail(email);
+
+        return clientMapper.toUpdateDTO(client);
+    }
+
+
+    //atualização da conta do cliente
+    @Override
+    @Transactional
+    public ClientResponseDTO update (String currentEmail, ClientUpdateDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException("Os dados de atualização são obrigatórios");
+        }
+
+        Client client = findClientByEmail(currentEmail);
+
+        String normalizedNewEmail = dto.getEmail().trim().toLowerCase();
+
+        String normalizedPhone = onlyNumbers(dto.getPhone());
+
+        validateEmailChange(currentEmail, normalizedNewEmail);
+
+        dto.setEmail(normalizedNewEmail);
+        dto.setPhone(normalizedPhone);
+
+        clientMapper.updateEntities(dto, client);
+
+        userRepository.save(client.getUser());
+
+        Client updatedClient = clientRepository.save(client);
+
+        return clientMapper.toResponseDTO(updatedClient);
+    }
+
+
+    //metodos privados auxiliares
+
+    private Client findClientByEmail(String email) {
+        if(email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-mail não informado");
+        }
+
+        String normalizedEmail = email.trim().toLowerCase();
+
+        return clientRepository.findByUser_Email(normalizedEmail)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    }
+
+    private void validateRegistration(ClientRegistrationDTO dto) {
+      if (dto == null) {
+          throw new IllegalArgumentException("OS dados do cadastro são obrigatórios");
+      }
+      validatePasswords(dto);
+      validateBillingAddress(dto);
+
+
+    }
+
+    private void validatePasswords (ClientRegistrationDTO dto) {
+        if(dto.getPassword() == null || dto.getConfirmPassword() == null
+                || !dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("A senha e a confirmação de senha não coincidem");
+        }
+    }
+
+    private void validateBillingAddress(ClientRegistrationDTO dto) {
+        if(dto.getBillingAddress() == null) {
+            throw new IllegalArgumentException("O endereço de cobrança é obrigatório");
+        }
+
+        String normalizedCep = cepValidationService.normalize(dto.getBillingAddress().getCep());
+        boolean validCep = cepValidationService.isValid(normalizedCep);
+
+        if(!validCep) {
+            throw new IllegalArgumentException("Informe um CEP válido");
+        }
+
+        dto.getBillingAddress().setCep(normalizedCep);
+    }
+
+
+    private void validateEmailChange(String currentEmail, String newEmail) {
+
+        if (currentEmail.equalsIgnoreCase(newEmail)) {
+            return;
+        }
+
+        if (userRepository.findByEmail(newEmail).isPresent()) {
+            throw new IllegalArgumentException("Já existe usuário cadastrado com esse e-mail");
+        }
+    }
+
+    private String onlyNumbers(String value) {
+        if(value == null) {
+            return null;
+        }
+
+        return value.replaceAll("\\D", "");
     }
 }
