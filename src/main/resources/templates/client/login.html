@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Adega do Campinho</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #061b35, #0a3768);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo {
+            display: block;
+            max-width: 170px;
+            margin: 0 auto 20px;
+        }
+
+        .login-title {
+            color: #082f5b;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            color: #082f5b;
+            font-weight: 600;
+        }
+
+        .form-control {
+            min-height: 48px;
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            border-color: #0a58a2;
+            box-shadow: 0 0 0 0.2rem rgba(10, 88, 162, 0.2);
+        }
+
+        .input-group-text {
+            color: #0a3768;
+            background-color: #f3f7fb;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn-login {
+            min-height: 48px;
+            background-color: #0a58a2;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #083f76;
+            color: #ffffff;
+        }
+
+        .register-link {
+            color: #0a58a2;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #dcecff;
+        }
+
+        .alert {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+        <img th:src="@{/images/logo-adega.png}"
+             src="/images/logo-adega.png"
+             class="logo"
+             alt="Logo Adega do Campinho">
+
+        <h2 class="login-title">Entrar na sua conta</h2>
+        <p class="login-subtitle">Informe seu e-mail e senha para continuar.</p>
+
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+
+            <i class="bi bi-exclamation-circle me-1"></i>
+            E-mail ou senha inválidos.
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle me-1"></i>
+            Logout realizado com sucesso.
+        </div>
+
+        <form th:action="@{/client/login}" method="post" autocomplete="off">
+
+            <input type="text" name="fake-email" autocomplete="username" style="display: none">
+            <input type="password" name="fake-password" autocomplete="current-password" style="display:none">
+
+            <div class="mb-3">
+                <label for="email" class="form-label">
+                    E-mail
+                </label>
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           class="form-control"
+                           placeholder="Digite seu e-mail"
+                           autocomplete="off"
+                           required
+                           autofocus>
+                </div>
+            </div>
+
+            <div class="mb-3">
+
+                <label for="password" class="form-label">
+                    Senha
+                </label>
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="Digite sua senha"
+                           autocomplete="new-password"
+                           required>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div class="form-check">
+
+                    <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
+
+                    <label class="form-check-label" for="remember-me">
+                        Lembrar de mim
+                    </label>
+                </div>
+
+                <a href="#" class="register-link">
+                    Esqueci minha senha
+                </a>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100">
+                <i class="bi bi-box-arrow-in-right me-1"></i>
+                Entrar
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <p class="text-center mb-0">
+            Ainda não possui uma conta?
+
+            <a th:href="@{/client/register}" class="register-link">
+                Criar conta
+            </a>
+        </p>
+    </div>
+
+    <a th:href="@{/store/homepage}" class="back-link">
+
+        <i class="bi bi-arrow-left me-1"></i>
+        Voltar para a loja
+    </a>
+</div>
+
+</body>
+</html>

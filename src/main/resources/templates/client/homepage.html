@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adega do Campinho</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,7 +33,7 @@
             padding: 8px 0;
         }
 
-        .top-info i {
+        .top-info .bi::before {
             color: var(--gold);
             margin-right: 6px;
         }
@@ -87,15 +89,108 @@
             width: 58px;
         }
 
-        .nav-action {
-            color: var(--primary-blue);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
         .nav-action i {
             font-size: 28px;
             margin-right: 8px;
+        }
+
+        .nav-action small {
+            font-size: 12px;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 24px;
+        }
+
+        .nav-action {
+            display: flex;
+            align-items: center;
+            color: var(--primary-blue);
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-action-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .nav-action-text small {
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .account-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            color: var(--primary-blue);
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .account-dropdown:hover {
+            color: var(--secondary-blue);
+        }
+
+        .account-dropdown > i:first-child {
+            font-size: 28px;
+        }
+
+        .account-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .account-email {
+            display: block;
+            max-width: 145px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            margin-left: 2px;
+        }
+
+        .account-menu {
+            min-width: 210px;
+            margin-top: 12px;
+            border: 1px solid #e1e5ee;
+            border-radius: 10px;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .account-menu .dropdown-item {
+            border-radius: 7px;
+            padding: 10px 12px;
+            color: var(--primary-blue);
+        }
+
+        .account-menu .dropdown-item:hover {
+            background: var(--light-bg);
+        }
+
+        .logout-menu-item {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
         }
 
         .hero {
@@ -190,6 +285,12 @@
             margin: 0;
             font-weight: 700;
             color: var(--primary-blue);
+        }
+
+        .category-icon {
+            width: 42px;
+            height: 42px;
+            margin-bottom: 12px;
         }
 
         .product-card {
@@ -293,10 +394,200 @@
             margin-top: 40px;
             text-align: center;
         }
+
+        .logout-toast-container {
+            z-index: 2000;
+            margin-top: 12px;
+        }
+
+        .logout-toast {
+            min-width: 330px;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .logout-toast .toast-header {
+            padding: 12px 14px;
+            background: #ffffff;
+            color: var(--primary-blue);
+            border-bottom: 1px solid #e7ebf0;
+        }
+
+        .logout-toast .toast-body {
+            padding: 14px;
+            background: #ffffff;
+            color: #495057;
+        }
+
+        .logout-toast-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #d1f4e0;
+            color: #157347;
+            font-size: 17px;
+        }
+
+        @media (max-width: 991.98px) {
+            .main-navbar {
+                padding: 12px 0;
+            }
+
+            .logo-img {
+                height: 58px;
+            }
+
+            .navbar-actions {
+                gap: 16px;
+            }
+
+            .nav-action i,
+            .account-dropdown > i:first-child {
+                font-size: 24px;
+            }
+
+            .account-email {
+                max-width: 100px;
+            }
+
+            .category-btn {
+                height: 46px;
+                padding: 10px 12px;
+            }
+
+            .search-box {
+                height: 46px;
+            }
+
+            .search-btn {
+                width: 52px;
+            }
+
+            .carousel-img {
+                height: 340px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .top-info {
+                font-size: 11px;
+                padding: 6px 0;
+            }
+
+            .top-info .container {
+                justify-content: center !important;
+            }
+
+            .top-info span:nth-child(2),
+            .top-info span:nth-child(3) {
+                display: none;
+            }
+
+            .logo-img {
+                height: 50px;
+            }
+
+            .navbar-actions {
+                gap: 14px;
+            }
+
+            .nav-action-text,
+            .account-text{
+                display: none;
+            }
+
+            .nav-action i,
+            .account-dropdown > i:first-child {
+                margin-right: 0;
+                font-size: 27px;
+            }
+
+            .dropdown-arrow {
+                display: none;
+            }
+
+            .category-btn {
+                padding: 9px 6px;
+                font-size: 13px;
+            }
+
+            .search-box {
+                font-size: 13px;
+            }
+
+            .carousel-img {
+                height: 300px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .category-card {
+                padding: 16px 8px;
+            }
+
+            .category-card i {
+                font-size: 28px;
+            }
+
+            .category-card p {
+                font-size: 13px;
+            }
+
+            .logout-toast-container {
+                width: 100%;
+                padding: 12px !important;
+                margin-top: 0;
+            }
+
+            .logout-toast {
+                width: 100%;
+                min-width: 0;
+            }
+        }
     </style>
 
 </head>
 <body>
+
+<div class="toast-container position-fixed top-0 end-0 p-3 logout-toast-container">
+
+    <div id="logoutToast"
+         th:if="${param.logout != null}"
+         class="toast logout-toast"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true"
+         data-bs-delay="4000">
+
+        <div class="toast-header">
+
+            <div class="logout-toast-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <strong class="me-auto">
+                Sessão encerrada
+            </strong>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="toast"
+                    aria-label="Fechar">
+            </button>
+        </div>
+            <div class="toast-body">
+                Você saiu da sua conta com sucesso.
+            </div>
+    </div>
+</div>
 
 <div class="top-info">
     <div class="container d-flex justify-content-between align-items-center">
@@ -308,50 +599,122 @@
 
 <nav class="main-navbar">
     <div class="container">
+
         <div class="row align-items-center g-3">
 
-            <div class="col-md-2">
-                <a th:href="@{/}">
-                    <img th:src="@{/images/logo-adega.png}" class="logo-img" alt="Adega do Campinho">
+            <div class="col-4 col-lg-2 navbar-logo-column order-1">
+                <a th:href="@{/store/homepage}">
+                    <img th:src="@{/images/logo-adega.png}"
+                         class="logo-img"
+                         alt="Adega do Campinho">
                 </a>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-5 col-lg-2 order-3 order-lg-2">
                 <button class="category-btn w-100">
-                    <i class="bi bi-list"></i>Categorias
+                    <i class="bi bi-list me-1"></i>
+                    Categorias
                 </button>
             </div>
 
-            <div class="col-md-5">
-                <form th:action="@{/}" method="get" class="d-flex">
+            <div class="col-7 col-lg-4 order-4 order-lg-3">
+
+                <form th:action="@{/store/homepage}" method="get" class="d-flex">
+
                     <input type="text"
                            name="keyword"
                            class="form-control search-box"
-                           placeholder="O que você está procurando?"
+                           placeholder="O que você procura?"
                            th:value="${keyword}">
-                    <button class="btn search-btn" type="submit">
+
+                    <button class="btn search-btn" type="submit" aria-label="Pesquisar">
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
             </div>
 
-            <div class="col-md-3 d-flex justify-content-end gap-4">
-                <a th:href="@{/client/register}" class="nav-action d-flex align-items-center">
-                    <i class="bi bi-person"></i>
-                    <span>
-                        Minha Conta
-                        <br>
-                        <small>Entrar / Cadastrar</small>
-                    </span>
-                </a>
+            <div class="col-8 col-lg-4 order-2 order-lg-4 d-flex justify-content-end align-items-center">
 
-                <a href="#" class="nav-action d-flex align-items-center">
-                    <i class="bi bi-cart3"></i>
-                    <span>Carrinho<br><small>R$: 0,00</small></span>
-                </a>
+                <div sec:authorize="isAnonymous()" class="navbar-actions">
+                    <a th:href="@{/client/login}" class="nav-action">
+                        <i class="bi bi-person"></i>
+
+                        <span class="nav-action-text">
+                            Minha Conta
+                            <small>Entrar / Cadastrar</small>
+                        </span>
+                    </a>
+
+                    <a href="#" class="nav-action">
+                        <i class="bi bi-cart3"></i>
+                        <span class="nav-action-text">
+                            Carrinho
+                            <small>R$ 0,00</small>
+                        </span>
+                    </a>
+                </div>
+
+                <div sec:authorize="hasRole('CLIENT')" class="navbar-actions">
+
+                    <div class="dropdown">
+                        <button class="account-dropdown"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+
+                            <span class="account-text">
+                                Minha Conta
+
+                                <small sec:authentication="name" class="account-email">Cliente@email.com</small>
+                            </span>
+
+                            <i class="bi bi-chevron-down dropdown-arrow"></i>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end account-menu">
+                            <li>
+                                <a  href="#" class="dropdown-item">
+                                <i class="bi bi-person me-2"></i>
+                                    Minha conta
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="#" class="dropdown-item">
+                                    <i class="bi bi-bag me-2"></i>
+                                    Meus pedidos
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <form th:action="@{/client/logout}" method="post">
+                                    <button type="submit" class="dropdown-item logout-menu-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        Sair
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="nav-action">
+                        <i class="bi bi-cart3"></i>
+
+                        <span class="nav-action-text">
+                            Carrinho
+                            <small>R$ 0,00</small>
+                        </span>
+                    </a>
+
+                </div>
             </div>
-
         </div>
+
     </div>
 </nav>
 
@@ -359,7 +722,7 @@
     <div id="promoCarousel"
          class="carousel slide"
          data-bs-ride="carousel"
-         data-bs-interaval="5000"
+         data-bs-interval="5000"
          data-bs-pause="false"
          data-bs-wrap="true">
 
@@ -452,49 +815,49 @@
     <div class="row g-3">
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-cup-straw"></i>
+                <img th:src="@{/images/categories/whiskey.svg}" alt="Whisky" class="category-icon">
                 <p>Whisky</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-cup-hot"></i>
+                <img th:src="@{/images/categories/beer-mug.svg}" alt="Cerveja" class="category-icon">
                 <p>Cerveja</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-cup"></i>
+                <img th:src="@{/images/categories/wine-glass.svg}" alt="Vinho" class="category-icon">
                 <p>Vinho</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-cup-straw"></i>
+                <img th:src="@{/images/categories/gin.svg}" alt="Gin" class="category-icon">
                 <p>Gin</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-lightning-charge-fill"></i>
+                <img th:src="@{/images/categories/energy-drink.svg}" alt="Energético" class="category-icon">
                 <p>Energéticos</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-box-seam"></i>
+                <img th:src="@{/images/categories/box.svg}" alt="Combos" class="category-icon">
                     <p>Combos</p>
             </div>
         </div>
 
         <div class="col-6 col-md">
             <div class="category-card">
-                <i class="bi bi-percent"></i>
+                <img th:src="@{/images/categories/offer.svg}" alt="Ofertas" class="category-icon">
                 <p>Ofertas</p>
             </div>
         </div>
@@ -604,7 +967,20 @@
         <p class="mb-0">Venda proibida para menores de 18 anos.</p>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const logoutToastElement = document.getElementById("logoutToast");
+
+        if(logoutToastElement) {
+            const logoutToast =
+                new bootstrap.Toast(logoutToastElement);
+
+            logoutToast.show();
+        }
+    });
+</script>
 
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </html>
