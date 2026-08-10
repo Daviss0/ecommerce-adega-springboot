@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/admin/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/admin/home_adm", true)
+                        .defaultSuccessUrl("/admin/home", true)
                         .failureUrl("/login_adm?error=true")
                         .permitAll()
                 )
@@ -88,6 +88,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/client/**")
                         .hasRole("CLIENT")
+
                         .anyRequest().authenticated()
                 )
 

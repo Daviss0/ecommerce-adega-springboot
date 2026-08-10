@@ -1,9 +1,7 @@
 package com.adega.adega.dto.client;
 
 
-import com.adega.adega.validation.ValidCpf;
 import com.adega.adega.validation.ValidPhone;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,20 +28,11 @@ public class ClientRegistrationDTO {
     @NotBlank(message = "A confirmação de senha é obrigatória")
     private String confirmPassword;
 
-    @NotBlank(message = "O CPF é obrigatório")
-    @ValidCpf(message = "Informe um CPF válido")
-    private String cpf;
-
     @NotBlank(message = "O telefone é obrigatório")
     @ValidPhone (message = "Informe um telefone válido")
     private String phone;
 
-    @Valid
-    private AddressDTO billingAddress = new AddressDTO();
 
-    public ClientRegistrationDTO() {
-        this.billingAddress = new AddressDTO();
-    }
 
     //getters && setters
     public String getName() {return name;}
@@ -62,16 +51,9 @@ public class ClientRegistrationDTO {
 
     public void setConfirmPassword(String confirmPassword) {this.confirmPassword = confirmPassword;}
 
-    public String getCpf() {return cpf;}
-
-    public void setCpf(String cpf) {this.cpf = cpf;}
-
     public  String getPhone() {return phone;}
 
     public void setPhone(String phone) {this.phone = phone;}
 
-    public AddressDTO getBillingAddress() {return billingAddress;}
-
-    public void setBillingAddress(AddressDTO billingAddress) {this.billingAddress = billingAddress;}
 
 }

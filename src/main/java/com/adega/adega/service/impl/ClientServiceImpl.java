@@ -9,7 +9,6 @@ import com.adega.adega.entity.User;
 import com.adega.adega.mapper.ClientMapper;
 import com.adega.adega.repository.ClientRepository;
 import com.adega.adega.repository.UserRepository;
-import com.adega.adega.service.CepValidationService;
 import com.adega.adega.service.ClientService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,18 +26,15 @@ public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
     private final ClientMapper clientMapper;
     private final PasswordEncoder passwordEncoder;
-    private final CepValidationService  cepValidationService;
 
     public ClientServiceImpl(ClientRepository clientRepository,
                              UserRepository userRepository,
                              ClientMapper clientMapper,
-                             PasswordEncoder passwordEncoder,
-                             CepValidationService cepValidationService) {
+                             PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
         this.userRepository = userRepository;
         this.clientMapper = clientMapper;
         this.passwordEncoder = passwordEncoder;
-        this.cepValidationService = cepValidationService;
     }
 
     @Override
@@ -66,15 +62,10 @@ public class ClientServiceImpl implements ClientService {
                         normalizedKeyword
                 );
 
-        List<Client> byCpf =
-                clientRepository.findByCpfContaining(
-                        normalizedKeyword
-                );
 
         List<Client> results = new ArrayList<>(byName);
 
        results.addAll(byEmail);
-       results.addAll(byCpf);
 
        return results.stream()
                .distinct()
@@ -115,7 +106,6 @@ public class ClientServiceImpl implements ClientService {
 
         String normalizedEmail = dto.getEmail().trim().toLowerCase();
 
-        String normalizedCpf = onlyNumbers(dto.getCpf());
 
         String normalizedPhone = onlyNumbers(dto.getPhone());
 
@@ -125,14 +115,8 @@ public class ClientServiceImpl implements ClientService {
             );
         }
 
-        if(clientRepository.existsByCpf(normalizedCpf)) {
-            throw new IllegalArgumentException(
-                    "Já existe um cliente cadastrado com esse CPF"
-            );
-        }
 
         dto.setEmail(normalizedEmail);
-        dto.setCpf(normalizedCpf);
         dto.setPhone(normalizedPhone);
 
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
@@ -214,10 +198,9 @@ public class ClientServiceImpl implements ClientService {
 
     private void validateRegistration(ClientRegistrationDTO dto) {
       if (dto == null) {
-          throw new IllegalArgumentException("OS dados do cadastro são obrigatórios");
+          throw new IllegalArgumentException("Os dados do cadastro são obrigatórios");
       }
       validatePasswords(dto);
-      validateBillingAddress(dto);
 
 
     }
@@ -229,20 +212,6 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    private void validateBillingAddress(ClientRegistrationDTO dto) {
-        if(dto.getBillingAddress() == null) {
-            throw new IllegalArgumentException("O endereço de cobrança é obrigatório");
-        }
-
-        String normalizedCep = cepValidationService.normalize(dto.getBillingAddress().getCep());
-        boolean validCep = cepValidationService.isValid(normalizedCep);
-
-        if(!validCep) {
-            throw new IllegalArgumentException("Informe um CEP válido");
-        }
-
-        dto.getBillingAddress().setCep(normalizedCep);
-    }
 
 
     private void validateEmailChange(String currentEmail, String newEmail) {

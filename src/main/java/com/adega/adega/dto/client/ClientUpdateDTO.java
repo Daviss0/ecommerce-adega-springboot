@@ -1,10 +1,8 @@
 package com.adega.adega.dto.client;
 
 import com.adega.adega.validation.ValidPhone;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class ClientUpdateDTO {
@@ -21,12 +19,6 @@ public class ClientUpdateDTO {
     @ValidPhone(message = "Informe um telefone válido")
     private String phone;
 
-    @Valid
-    private AddressDTO billingAddress;
-
-    public ClientUpdateDTO() {
-        this.billingAddress = new AddressDTO();
-    }
 
     //getters && setters
     public String getName() {return name;}
@@ -40,9 +32,5 @@ public class ClientUpdateDTO {
     public String getPhone() {return phone;}
 
     public void setPhone(String phone) {this.phone = phone;}
-
-    public @Valid AddressDTO getBillingAddress() {return billingAddress;}
-
-    public void setBillingAddress(@Valid AddressDTO billingAddress) {this.billingAddress = billingAddress;}
 
 }

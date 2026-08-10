@@ -7,11 +7,12 @@ import jakarta.validation.constraints.Size;
 
 public class AddressDTO {
 
+    private Long id;
+
     @NotBlank(message = "O CEP é obrigatório")
     @Pattern(
-            regexp = "\\d{8}",
-            message = "O CEP deve possuir 8 números"
-    )
+            regexp = "\\d{5}-?\\d{3}",
+            message = "Informe um CEP válido")
     private String cep;
 
     @NotBlank(message = "O endereço é obrigatório")
@@ -33,14 +34,16 @@ public class AddressDTO {
     @Size(max = 100, message = "A cidade deve possuir no máximo 100 caracteres")
     private String city;
 
-    @NotBlank(message = "O estado é obrigatório")
-    @Pattern(
-            regexp = "^[A-Z]{2}$",
-            message = "Informe um estado válido"
-    )
-    private String state;
+    private boolean principal;
+
+    public AddressDTO() {
+    }
 
     //getters && setters
+    public Long getId() {return id;}
+
+    public void setId(Long id) {this.id = id;}
+
     public  String getCep() {return cep;}
 
     public void setCep(String cep) {this.cep = cep;}
@@ -65,9 +68,9 @@ public class AddressDTO {
 
     public void setCity(String city) {this.city = city;}
 
-    public String getState (){return state;}
+    public boolean isPrincipal() {return principal;}
 
-    public void setState(String state) {this.state = state;}
+    public void setPrincipal(boolean principal) {this.principal = principal;}
 
 
 }

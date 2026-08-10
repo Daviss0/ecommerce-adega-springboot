@@ -545,3 +545,6 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/projetos/Adeg
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:291)
 	... 63 more
+2026-07-29 20:24:34.384823-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT" not found; SQL statement:
+ALTER TABLE client DROP COLUMN cpf [42102-240]

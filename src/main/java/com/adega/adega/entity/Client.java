@@ -19,14 +19,9 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
-
-    @NotBlank(message = "O CPF é obrigatório")
-    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
-    @Column(nullable = false, unique = true, length = 11)
-    private String cpf;
 
     @NotBlank(message = "O telefone é obrigatório")
     @Pattern(regexp = "\\d{10,11}", message = "O telefone deve conter 10 ou 11 números")
@@ -38,17 +33,9 @@ public class Client {
 
     private LocalDateTime updatedAt;
 
-    @Valid
-    @Embedded
-    private Address billingAddress;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
-    @Valid
-    @ElementCollection
-    @CollectionTable(
-            name = "client_delivery_address",
-            joinColumns = @JoinColumn(name = "client_id")
-    )
-    private List<Address> deliveryAddresses =  new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
@@ -65,6 +52,16 @@ public class Client {
 
     }
 
+    public void addAddress(Address address) {
+        addresses.add(address);
+        address.setClient(this);
+    }
+
+    public void removeAddress(Address address) {
+        addresses.remove(address);
+        address.setClient(null);
+    }
+
     //getters & setters
     public Long getId() {return id;}
 
@@ -73,10 +70,6 @@ public class Client {
     public User getUser() {return user;}
 
     public void setUser(User user) {this.user = user;}
-
-    public String getCpf() {return cpf;}
-
-    public void setCpf(String cpf) {this.cpf = cpf;}
 
     public String getPhone() {return phone;}
 
@@ -90,13 +83,15 @@ public class Client {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {this.updatedAt = updatedAt;}
 
-    public Address getBillingAddress() {return billingAddress;}
+    public List<Address> getAddresses() {return addresses;}
 
-    public void setBillingAddress(Address billingAddress) {this.billingAddress = billingAddress;}
+    public void setAddresses(List<Address> addresses){
+        this.addresses.clear();
 
-    public List<Address> getDeliveryAddresses() {return deliveryAddresses;}
-
-    public void setDeliveryAddresses(List<Address> deliveryAddresses) {this.deliveryAddresses = deliveryAddresses;}
+        if (addresses != null) {
+            addresses.forEach(this::addAddress);
+        }
+    }
 
 
 }

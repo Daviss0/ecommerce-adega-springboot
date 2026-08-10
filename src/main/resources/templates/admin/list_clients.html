@@ -237,7 +237,6 @@
         <tr>
           <th>Nome</th>
           <th>Email</th>
-          <th>CPF</th>
           <th>Telefone</th>
           <th>Cadastro</th>
           <th>Status</th>
@@ -257,8 +256,6 @@
           <td th:text="${client.user.name}"></td>
 
           <td th:text="${client.user.email}"></td>
-
-          <td th:text="${client.cpf}"></td>
 
           <td th:text="${client.phone}"></td>
 
@@ -326,11 +323,6 @@
                 <p>
                   <strong>Email:</strong>
                   <span th:text="${client.user.email}"></span>
-                </p>
-
-                <p>
-                  <strong>CPF:</strong>
-                  <span th:text="${client.cpf}"></span>
                 </p>
 
                 <p>
