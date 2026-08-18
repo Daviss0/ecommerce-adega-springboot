@@ -14,7 +14,7 @@ public class Product {
     private Long id;
 
     @NotBlank(message = "O nome do produto é obrigatório")
-    @Size(max = 150, message = "O nome deve ter no mínimo 150 caracteres")
+    @Size(max = 150, message = "O nome deve ter no máximo 150 caracteres")
     @Column(nullable = false, length = 150)
     private String name;
 

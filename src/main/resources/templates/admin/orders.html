@@ -228,7 +228,7 @@
     <div class="topbar">
         <div>
             <h3 class="mb-0">Pedidos</h3>
-            <small class="text-mutted">Acompanhe e gerencie os pedidos dos clientes</small>
+            <small class="text-muted">Acompanhe e gerencie os pedidos dos clientes</small>
         </div>
 
         <form th:action="@{/admin/orders}" method="get" class="d-flex gap-2">
@@ -236,7 +236,7 @@
                 <option value="">Todos os status</option>
                 <option th:each="status : ${statuses}"
                 th:value="${status}"
-                th:Text="${status}"
+                th:text="${status.description}"
                 th:selected="${selectedStatus == status}">
                 </option>
             </select>
@@ -275,6 +275,9 @@
                 </tr>
 
                 <tr th:each="order : ${orders}">
+
+                    <td th:text="'#' + ${order.id}"></td>
+
                     <td th:text="${order.client.user.name}"></td>
 
                     <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></td>
@@ -282,27 +285,28 @@
                     <td th:text="${#numbers.formatCurrency(order.totalAmount)}"></td>
 
                     <td>
-                        <span class="status-badge"
-                        th:classappend="'status-' + ${order.status}"
-                        th:text="${order.status}">
-                        </span>
+        <span class="status-badge"
+              th:classappend="'status-' + ${order.status}"
+              th:text="${order.status.description}">
+        </span>
                     </td>
 
                     <td>
                         <a href="#"
-                        class="action-btn btn-view"
-                        data-bs-toggle="modal"
-                        th:data-bs-target="'#viewOrderModal' + ${order.id}">
+                           class="action-btn btn-view"
+                           data-bs-toggle="modal"
+                           th:data-bs-target="'#viewOrderModal' + ${order.id}">
                             <i class="bi bi-eye"></i>
                         </a>
 
                         <a href="#"
-                        class="action-btn btn-status"
-                        data-bs-toggle="modal"
-                        th:data-bs-target="'#statusOrderModal' + ${order.id}">
+                           class="action-btn btn-status"
+                           data-bs-toggle="modal"
+                           th:data-bs-target="'#statusOrderModal' + ${order.id}">
                             <i class="bi bi-arrow-repeat"></i>
                         </a>
                     </td>
+
                 </tr>
 
                 </tbody>
@@ -336,12 +340,12 @@
 
                                 <p>
                                     <strong>Data:</strong>
-                                    <span th:text="${#temporals.format(orderDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                    <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </p>
 
                                 <p>
                                     <strong>Status:</strong>
-                                    <span th:Text="${order.status}"></span>
+                                    <span th:Text="${order.status.description}"></span>
                                 </p>
 
                                 <hr>
@@ -353,7 +357,7 @@
                                     <tr>
                                         <th>Produto</th>
                                         <th>Quantidade</th>
-                                        <th>Preço Unitátio</th>
+                                        <th>Preço Unitário</th>
                                         <th>Subtotal</th>
                                     </tr>
                                     </thead>
@@ -368,8 +372,8 @@
                                     <tr th:each="item : ${order.items}">
                                         <td th:text="${item.product.name}"></td>
                                         <td th:text="${item.quantity}"></td>
-                                        <td th:text="${numbers.formatCurrency(item.unitPrice)}"></td>
-                                        <td th:text="${numbers.formatCurrency(item.subtotal)}"></td>
+                                        <td th:text="${#numbers.formatCurrency(item.unitPrice)}"></td>
+                                        <td th:text="${#numbers.formatCurrency(item.subtotal)}"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -391,7 +395,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content rounded-4">
 
-                            <form th:action="@{/admin/orders/status/{id}(id=${order.id}}" method="post">
+                            <form th:action="@{/admin/orders/status/{id}(id=${order.id})}" method="post">
 
                                 <input type="hidden"
                                 th:name="${_csrf.parameterName}"
@@ -413,8 +417,8 @@
                                     <select name="status" class="form-select" required>
                                         <option th:each="status : ${statuses}"
                                                 th:value="${status}"
-                                                th:text="${status}"
-                                                th:selected="${order.status == status}">
+                                                th:text="${status.description}"
+                                                th:selected="${selectedStatus == status}">
                                         </option>
                                     </select>
                                 </div>
