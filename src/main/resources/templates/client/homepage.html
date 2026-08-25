@@ -19,6 +19,42 @@
 
 <div class="toast-container position-fixed top-0 end-0 p-3 logout-toast-container">
 
+    <div id="cartSuccessToast" th:if="${successMessage != null}" class="toast cart-toast" role="alert"
+    aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+
+        <div class="toast-header">
+            <i class="bi bi-check-circle-fill me-2 text-success"></i>
+
+            <strong class="me-auto">
+                Carrinho
+            </strong>
+
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar">
+            </button>
+        </div>
+
+        <div class="toast-body" th:text="${successMessage}">
+        </div>
+    </div>
+
+    <div id="cartErrorToast" th:if="${errorMessage != null}" class="toast cart-toast" role="alert"
+         aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+
+        <div class="toast-header">
+            <i class="bi bi-exclamation-circle-fill me-2 text-danger"></i>
+
+            <strong class="me-auto">
+                Carrinho
+            </strong>
+
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar">
+            </button>
+        </div>
+
+        <div class="toast-body" th:text="${errorMessage}">
+        </div>
+    </div>
+
     <div id="logoutToast"
          th:if="${param.logout != null}"
          class="toast logout-toast"
@@ -215,7 +251,7 @@
                 <i class="bi bi-heart favorite-icon"></i>
 
                 <img th:if="${product.imageData != null}"
-                     th:src="@{/products/image/{id}(id=${product.id})}"
+                     th:src="@{/store/products/image/{id}(id=${product.id})}"
                      class="product-img"
                      alt="Produto">
 
@@ -246,9 +282,20 @@
                     R$ 99,90
                 </div>
 
-                <button class="add-cart-btn">
-                    <i class="bi bi-cart3"></i> Adicionar
-                </button>
+               <form th:action="@{/client/cart/add}" method="post" sec:authorize="hasRole('CLIENT')">
+                   <input type="hidden" name="productId" th:value="${product.id}">
+                   <input type="hidden" name="quantity" value="1">
+
+                   <button type="submit" class="add-cart-btn">
+                       <i class="bi bi-cart3"></i>
+                       Adicionar
+                   </button>
+               </form>
+
+                <a th:href="@{/client/login}" class="add-cart-btn" sec:authorize="isAnonymous()">
+                    <i class="bi bi-cart3"></i>
+                    Adicionar
+                </a>
 
             </div>
         </div>
@@ -303,16 +350,31 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const logoutToastElement = document.getElementById("logoutToast");
 
-        if(logoutToastElement) {
-            const logoutToast =
-                new bootstrap.Toast(logoutToastElement);
+   document.addEventListener("DOMContentLoaded", function () {
 
-            logoutToast.show();
-        }
-    });
+       const logoutToastElement = document.getElementById("logoutToast");
+
+       const cartSuccessToastElement = document.getElementById("cartSuccessToast");
+
+       const cartErrorToastElement = document.getElementById("cartErrorToast");
+
+       if (logoutToastElement) {
+           const logoutToast = new bootstrap.Toast(logoutToastElement);
+           logoutToast.show();
+       }
+
+       if (cartSuccessToastElement) {
+           const cartSuccessToast = new bootstrap.Toast(cartSuccessToastElement);
+           cartSuccessToast.show();
+       }
+
+       if (cartErrorToastElement) {
+           const cartErrorToast = new bootstrap.Toast(cartErrorToastElement);
+           cartErrorToast.show();
+       }
+   });
+
 </script>
 
 </body>

@@ -150,6 +150,10 @@ body {
     transition: .2s;
 }
 
+.product-card form {
+    width: 100%;
+}
+
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
@@ -215,10 +219,18 @@ body {
     border-radius: 8px;
     padding: 10px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .add-cart-btn:hover {
     background: var(--secondary-blue);
+    color: white;
+    text-decoration: none;
 }
 
 .benefits {
@@ -281,6 +293,27 @@ body {
     font-size: 17px;
 }
 
+.cart-toast {
+    min-width: 330px;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgb(0, 0, 0, 0.18);
+}
+
+.cart-toast .toast-header {
+    padding: 12px 14px;
+    background: #ffffff;
+    color: var(--primary-blue);
+    border-bottom: 1px solid #e7ebf0;
+}
+
+.cart-toast .toast-body {
+    padding: 14px;
+    background: #ffffff;
+    color: #495057;
+}
+
 @media (max-width: 991.98px) {
 
     .category-btn {
@@ -338,7 +371,8 @@ body {
         margin-top: 0;
     }
 
-    .logout-toast {
+    .logout-toast,
+    .cart-toast {
         width: 100%;
         min-width: 0;
     }
