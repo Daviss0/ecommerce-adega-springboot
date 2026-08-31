@@ -17,7 +17,7 @@ public class Cart {
     private Long id;
 
     @NotNull(message = "O cliente é obrigatório.")
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false, unique = true)
     private Client client;
 
@@ -38,6 +38,19 @@ public class Cart {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void touch() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addItem(CartItem item) {
+        items.add(item);
+        item.setCart(this);
+    }
+
+    public void removeItem(CartItem item) {
+        items.remove(item);
+        item.setCart(null);
+    }
 
     //getters && setters
     public Long getId() {return id;}

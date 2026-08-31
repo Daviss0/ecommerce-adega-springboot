@@ -2,6 +2,7 @@ package com.adega.adega.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
@@ -18,21 +19,22 @@ public class Address {
     private String cep;
 
     @NotBlank(message = "A rua é obrigatória")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String street;
 
     @NotBlank(message = "O número é obrigatório")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String number;
 
+    @Column(length = 150)
     private String complement;
 
-    @NotBlank(message = "O bairro é orbigatório")
-    @Column(nullable = false)
+    @NotBlank(message = "O bairro é obrigatório")
+    @Column(nullable = false, length = 100)
     private String hood;
 
-    @NotBlank(message = "A cidadeé obrigatória")
-    @Column(nullable = false)
+    @NotBlank(message = "A cidade é obrigatória")
+    @Column(nullable = false, length = 100)
     private String city;
 
     @NotBlank(message = "O estado é obrigatório")
@@ -42,6 +44,7 @@ public class Address {
     @Column(nullable = false)
     private boolean principal = false;
 
+    @NotNull(message = "O cliente é obrigatório")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;

@@ -1,9 +1,11 @@
 package com.adega.adega.service.impl;
 
 
+import com.adega.adega.entity.Order;
 import com.adega.adega.entity.Product;
 import com.adega.adega.entity.StockMovement;
 import com.adega.adega.enumerated.StockMovementType;
+import com.adega.adega.exception.ProductNotFoundException;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.repository.StockMovementRepository;
 import com.adega.adega.service.StockService;
@@ -24,6 +26,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> listProductsStock() {
         return productRepository.findAll();
     }
@@ -33,11 +36,11 @@ public class StockServiceImpl implements StockService {
     public void addStock(Long productId, Integer quantity, String reason, String userName) {
 
         if(quantity == null || quantity <= 0) {
-            throw new RuntimeException("A quantidade deve ser maior que zero.");
+            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
         }
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+                .orElseThrow(() -> new ProductNotFoundException("Produto não encontrado."));
 
         product.setStock(product.getStock() + quantity);
         productRepository.save(product);
@@ -55,24 +58,50 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    public void removeStock(Long productId, Integer quantity, String reason, String userName) {
+    public void removeStock(
+            Long productId,
+            Integer quantity,
+            String reason,
+            String userName
+    ) {
+        removeStock(productId, quantity, reason, userName, null);
+    }
 
-        if(quantity == null || quantity <= 0) {
-            throw new RuntimeException("A quantidade deve ser maior que zero.");
+
+    @Override
+    @Transactional
+    public void removeStock(
+            Long productId,
+            Integer quantity,
+            String reason,
+            String userName,
+            Order order
+    ) {
+
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException(
+                    "A quantidade deve ser maior que zero."
+            );
         }
 
-        Product product =  productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() ->
+                        new RuntimeException("Produto não encontrado.")
+                );
 
-        if(product.getStock() < quantity) {
-            throw new RuntimeException("Estoque insuficiente para realizar a saída.");
+        if (product.getStock() < quantity) {
+            throw new IllegalArgumentException(
+                    "Estoque insuficiente para realizar a saída."
+            );
         }
 
         product.setStock(product.getStock() - quantity);
+
         productRepository.save(product);
 
         StockMovement movement = StockMovement.builder()
                 .product(product)
+                .order(order)
                 .type(StockMovementType.SAIDA)
                 .quantity(quantity)
                 .reason(reason)
@@ -83,11 +112,13 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StockMovement> listMovements() {
         return stockMovementRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StockMovement> listMovementsByProduct(Long productId) {
         return stockMovementRepository.findByProductIdOrderByCreatedAtDesc(productId);
     }

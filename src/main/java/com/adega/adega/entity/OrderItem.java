@@ -3,12 +3,11 @@ package com.adega.adega.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Data
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
@@ -18,14 +17,18 @@ public class OrderItem {
     private Long id;
 
     @NotNull(message = "O pedido é obrigatório")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @NotNull(message = "O produto é obrigatório")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @NotBlank(message = "O nome do produto é obrigatório")
+    @Column(nullable = false, length = 150)
+    private String productName;
 
     @NotNull(message = "A quantidade é obrigatória")
     @Min(value = 1, message = "A quantidade deve ser maior que zero")
@@ -62,6 +65,10 @@ public class OrderItem {
     public Product getProduct() {return product;}
 
     public void setProduct(Product product) {this.product = product;}
+
+    public String getProductName() {return productName;}
+
+    public void setProductName(String productName) {this.productName = productName;}
 
     public Integer getQuantity() {return quantity;}
 

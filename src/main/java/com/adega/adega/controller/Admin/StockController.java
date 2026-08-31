@@ -1,6 +1,7 @@
 package com.adega.adega.controller.Admin;
 
 
+import com.adega.adega.entity.Order;
 import com.adega.adega.service.StockService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,7 +58,7 @@ public class StockController {
 
             stockService.removeStock(id, quantity, reason, userName);
 
-            redirectAttributes.addAttribute("success", "Saída de estoque realizada com sucesso.");
+            redirectAttributes.addFlashAttribute("success", "Saída de estoque realizada com sucesso.");
         }
         catch (RuntimeException e) {
 

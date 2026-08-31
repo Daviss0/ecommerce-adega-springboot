@@ -31,10 +31,8 @@ public class Product {
     @NotNull(message = "O estoque é obrigatório")
     @Min(value = 0, message = "O estoque não pode ser negativo")
     @Column(nullable = false)
-    private Integer stock;
+    private Integer stock = 0;
 
-    @Column(nullable = false)
-    private Boolean status= true;
 
     @Column(name = "image_name")
     private String imageName;
@@ -42,25 +40,25 @@ public class Product {
     @Column(name = "image_path")
     private String imagePath;
 
-    @Lob //large object (campo grande no banco de dados, usado para salvar arquivos grandes)
-    @Column(name = "image_data", columnDefinition = "LONGBLOB") //força o banco a armazenar arquivos binários maiores
+    @Lob
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
     private byte[] imageData;
 
-    @Column(nullable = false, columnDefinition = "boolean default true")
+    @NotNull(message = "O status do produto é obrigatório")
+    @Column(nullable = false)
     private Boolean active = true;
 
     //constructors
     public Product() {
-        this.status = true;
     }
 
     public Product (String name, String category, BigDecimal price,
-                    Integer stock, Boolean status, String imageName, String imagePath, byte[] imageData) {
+                    Integer stock, Boolean active, String imageName, String imagePath, byte[] imageData) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
-        this.status = true;
+        this.active = active;
         this.imageName = imageName;
         this.imagePath = imagePath;
         this.imageData = imageData;
@@ -86,10 +84,6 @@ public class Product {
     public Integer getStock() {return stock;}
 
     public void setStock(Integer stock) {this.stock = stock;}
-
-    public Boolean getStatus() {return status;}
-
-    public void setStatus(Boolean status) {this.status = status;}
 
     public String getImageName() {return imageName;}
 

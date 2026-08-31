@@ -17,12 +17,12 @@ public class CartItem {
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
@@ -52,6 +52,9 @@ public class CartItem {
 
     @Transient
     public BigDecimal getSubtotal() {
+        if (product == null || product.getPrice() == null || quantity == null) {
+            return BigDecimal.ZERO;
+        }
         return product.getPrice().multiply(BigDecimal.valueOf(quantity));
     }
 }

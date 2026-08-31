@@ -3,6 +3,8 @@ package com.adega.adega.service.impl;
 import com.adega.adega.dto.client.AddressDTO;
 import com.adega.adega.entity.Address;
 import com.adega.adega.entity.Client;
+import com.adega.adega.exception.AddressNotFoundException;
+import com.adega.adega.exception.ClientNotFoundException;
 import com.adega.adega.mapper.AddressMapper;
 import com.adega.adega.repository.AddressRepository;
 import com.adega.adega.repository.ClientRepository;
@@ -32,7 +34,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AddressDTO> findAllByClientEmail(String clientEmail) {
         Client client = findClientByEmail(clientEmail);
 
@@ -43,7 +45,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public AddressDTO findByIdAndClientEmail(Long addressId, String clientEmail) {
         Client client = findClientByEmail(clientEmail);
 
@@ -116,12 +118,12 @@ public class AddressServiceImpl implements AddressService {
     //metodos auxiliares
     private Client findClientByEmail(String email) {
         return clientRepository.findByUserEmail(email)
-                .orElseThrow(() -> new IllegalAccessError("Cliente não encontrado"));
+                .orElseThrow(() -> new ClientNotFoundException("Cliente não encontrado"));
     }
 
     private Address findAddressByIdAndClient(Long addressId, Long clientId) {
         return addressRepository.findByIdAndClientId(addressId, clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Endereço não encontrado"));
+                .orElseThrow(() -> new AddressNotFoundException("Endereço não encontrado"));
     }
 
     private void defineAnotherAddressAsPrincipal(Long clientId) {

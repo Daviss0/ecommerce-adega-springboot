@@ -265,7 +265,17 @@
                 Carrinho
 
                 <small>
-                    Ver carrinho
+                    <span th:text="${cartItemCount}">
+                        0
+                    </span>
+
+                    <span th:text="${cartItemCount == 1 ? ' item · ' : ' itens · '}">
+                        itens ·
+                    </span>
+
+                    <span th:text="${'R$ ' + #numbers.formatDecimal(cartTotal, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 0,00
+                    </span>
                 </small>
 
             </span>

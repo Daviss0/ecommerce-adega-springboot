@@ -57,7 +57,7 @@ public class OrderMapper {
         OrderItemDTO dto = new OrderItemDTO();
 
         dto.setProductId(item.getProduct().getId());
-        dto.setProductName(item.getProduct().getName());
+        dto.setProductName(item.getProductName());
         dto.setQuantity(item.getQuantity());
         dto.setUnitPrice(item.getUnitPrice());
         dto.setSubtotal(item.getSubtotal());

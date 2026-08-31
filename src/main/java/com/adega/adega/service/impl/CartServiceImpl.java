@@ -7,6 +7,8 @@ import com.adega.adega.entity.Cart;
 import com.adega.adega.entity.CartItem;
 import com.adega.adega.entity.Client;
 import com.adega.adega.entity.Product;
+import com.adega.adega.exception.CartException;
+import com.adega.adega.exception.ProductNotFoundException;
 import com.adega.adega.mapper.CartMapper;
 import com.adega.adega.repository.CartItemRepository;
 import com.adega.adega.repository.CartRepository;
@@ -16,6 +18,7 @@ import com.adega.adega.service.CartService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -170,6 +173,19 @@ public class CartServiceImpl implements CartService {
         return cart.getItems().stream().mapToInt(CartItem::getQuantity).sum();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getCartTotal(String email) {
+        String normalizedEmail = normalizeEmail(email);
+
+        Cart cart = cartRepository.findByClientUserEmail(normalizedEmail).orElse(null);
+
+        if (cart == null) {
+            return BigDecimal.ZERO;
+        }
+        return cart.getTotal();
+    }
+
     //METODOS AUXILIARES
 
     private Cart getOrCreateCart(String email) {
@@ -190,7 +206,9 @@ public class CartServiceImpl implements CartService {
         String normalizedEmail = normalizeEmail(email);
 
         return cartRepository.findByClientUserEmail(normalizedEmail)
-                .orElseThrow(() -> new RuntimeException("Carrinho não encontrado."));
+                .orElseThrow(() ->
+                        new CartException("Carrinho não encontrado.")
+                );
     }
 
     private CartItem getClientCartItem(Cart cart, Long cartItemId) {
@@ -198,7 +216,7 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("Item do carrinho não informado.");
         }
         return cart.getItems().stream().filter(item -> cartItemId.equals(item.getId()))
-                .findFirst().orElseThrow(() -> new RuntimeException("Item não encontrado no carrinho."));
+                .findFirst().orElseThrow(() -> new CartException("Item não encontrado no carrinho."));
     }
 
     private Product getValidProduct(Long productId) {
@@ -207,7 +225,7 @@ public class CartServiceImpl implements CartService {
         }
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+                .orElseThrow(() -> new ProductNotFoundException("Produto não encontrado."));
 
         validateProductAvailability(product);
         return product;
@@ -215,10 +233,6 @@ public class CartServiceImpl implements CartService {
 
     private void validateProductAvailability(Product product) {
         if(!Boolean.TRUE.equals(product.getActive())) {
-            throw new IllegalArgumentException("Este produto não está ativo.");
-        }
-
-        if(!Boolean.TRUE.equals(product.getStatus())) {
             throw new IllegalArgumentException("Este produto não está disponível para venda.");
         }
 

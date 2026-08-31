@@ -24,9 +24,13 @@ public class StockMovement {
     private Long id;
 
     @NotNull(message = "O produto é obrigatório.")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @NotNull(message = "O tipo da movimentação é obrigatória.")
     @Enumerated(EnumType.STRING)
@@ -51,7 +55,9 @@ public class StockMovement {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+        createdAt = LocalDateTime.now();
+        }
     }
 
     //getters & setters
@@ -62,6 +68,10 @@ public class StockMovement {
     public Product getProduct() {return product;}
 
     public void setProduct(Product product) {this.product = product;}
+
+    public Order getOrder() {return order;}
+
+    public void setOrder(Order order) {this.order = order;}
 
     public StockMovementType getType() {return type;}
 

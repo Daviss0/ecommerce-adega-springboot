@@ -1,8 +1,8 @@
 package com.adega.adega.enumerated;
 
 public enum OrderStatus {
-    PENDING("Agurdando pagamento"),
-    PAID("Pagemento aprovado"),
+    PENDING("Aguardando pagamento"),
+    PAID("Pagamento aprovado"),
     PROCESSING("Em preparação"),
     SHIPPED("Saiu para entrega"),
     DELIVERED("Entregue"),

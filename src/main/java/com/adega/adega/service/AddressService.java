@@ -8,7 +8,7 @@ public interface AddressService {
 
     List<AddressDTO> findAllByClientEmail(String clientEmail);
 
-    AddressDTO findByIdAndClientEmail(Long clientId, String email);
+    AddressDTO findByIdAndClientEmail(Long addressId, String email);
 
     void create(AddressDTO addressDTO, String clientEmail);
 

@@ -14,6 +14,4 @@ public class AdminController {
     public String homeAdmin() {
         return "admin/home_adm";
     }
-
-
 }

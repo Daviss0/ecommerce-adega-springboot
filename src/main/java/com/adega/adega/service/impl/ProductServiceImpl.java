@@ -1,6 +1,7 @@
 package com.adega.adega.service.impl;
 
 import com.adega.adega.entity.Product;
+import com.adega.adega.exception.ProductNotFoundException;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.service.ProductService;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ProductNotFoundException("Produto não encontrado."));
     }
 
     @Override
@@ -30,8 +31,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setCategory(updatedProduct.getCategory());
         existingProduct.setPrice(updatedProduct.getPrice());
-        existingProduct.setStock(updatedProduct.getStock());
-        existingProduct.setStatus(updatedProduct.getStatus());
+        existingProduct.setActive(updatedProduct.getActive());
 
         if(imageFile != null && !imageFile.isEmpty()) {
             try{

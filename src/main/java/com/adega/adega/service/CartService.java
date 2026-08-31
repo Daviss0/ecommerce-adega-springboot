@@ -4,6 +4,8 @@ package com.adega.adega.service;
 import com.adega.adega.dto.cart.AddCartDTO;
 import com.adega.adega.dto.cart.CartDTO;
 
+import java.math.BigDecimal;
+
 public interface CartService {
 
     CartDTO getCart(String email);
@@ -19,4 +21,6 @@ public interface CartService {
     void clearCart(String email);
 
     int getTotalItems(String email);
+
+    BigDecimal getCartTotal(String email);
 }
