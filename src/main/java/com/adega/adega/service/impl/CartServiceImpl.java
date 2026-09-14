@@ -8,7 +8,9 @@ import com.adega.adega.entity.CartItem;
 import com.adega.adega.entity.Client;
 import com.adega.adega.entity.Product;
 import com.adega.adega.exception.CartException;
+import com.adega.adega.exception.InsufficientStockException;
 import com.adega.adega.exception.ProductNotFoundException;
+import com.adega.adega.exception.ProductUnavailableException;
 import com.adega.adega.mapper.CartMapper;
 import com.adega.adega.repository.CartItemRepository;
 import com.adega.adega.repository.CartRepository;
@@ -48,6 +50,31 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartDTO getCart(String email) {
         Cart cart = getOrCreateCart(email);
+        return cartMapper.toDTO(cart);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CartDTO getCartForCheckout(String email) {
+
+        Cart cart = getCartByEmail(email);
+
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new CartException("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.");
+        }
+
+        for (CartItem item : cart.getItems()) {
+            if (item.getQuantity() == null || item.getQuantity() <= 0) {
+                throw new CartException("Existe um produto com quantidade inválida no carrinho.");
+            }
+
+            Product product = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new ProductNotFoundException("Um dos produtos do carrinho não está mais disponível"));
+
+            validateProductAvailability(product);
+            validateStock(product, item.getQuantity());
+
+        }
         return cartMapper.toDTO(cart);
     }
 
@@ -233,11 +260,11 @@ public class CartServiceImpl implements CartService {
 
     private void validateProductAvailability(Product product) {
         if(!Boolean.TRUE.equals(product.getActive())) {
-            throw new IllegalArgumentException("Este produto não está disponível para venda.");
+            throw new ProductUnavailableException("Este produto não está disponível para venda.");
         }
 
         if(product.getStock() == null || product.getStock() <= 0) {
-            throw new IllegalArgumentException("Produto sem estoque disponível.");
+            throw new ProductUnavailableException("Este produto está sem estoque disponível.");
         }
     }
 
@@ -247,7 +274,7 @@ public class CartServiceImpl implements CartService {
         }
 
         if (product.getStock() == null || product.getStock() < desiredQuantity) {
-            throw new IllegalArgumentException("Estoque insuficiente para a quantidade desejada.");
+            throw new InsufficientStockException("Estoque insuficiente para a quantidade desejada.");
         }
     }
 

@@ -336,15 +336,16 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Estoque</label>
-                            <input type="number"
-                            class="form-control"
-                            th:field="*{stock}"
-                            min="0"
-                            placeholder="0">
+                            <label class="form-label">Estoque inicial</label>
 
-                            <div class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                            <input type="number" class="form-control" value="0" disabled>
+
+                            <div class="form-text">
+                                Novos produtos são cadastrados com estoque zerado.
+                                Após o cadastro, adicione unidades pelo módulo de estoque.
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>

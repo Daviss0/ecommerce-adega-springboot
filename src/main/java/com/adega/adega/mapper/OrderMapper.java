@@ -44,6 +44,14 @@ public class OrderMapper {
         dto.setStatus(order.getStatus());
         dto.setTotalAmount(order.getTotalAmount());
 
+        dto.setDeliveryCep(order.getDeliveryCep());
+        dto.setDeliveryStreet(order.getDeliveryStreet());
+        dto.setDeliveryNumber(order.getDeliveryNumber());
+        dto.setDeliveryComplement(order.getDeliveryComplement());
+        dto.setDeliveryHood(order.getDeliveryHood());
+        dto.setDeliveryCity(order.getDeliveryCity());
+        dto.setDeliveryState(order.getDeliveryState());
+
         List<OrderItemDTO> items = order.getItems()
                 .stream()
                 .map(this::toItemDTO)

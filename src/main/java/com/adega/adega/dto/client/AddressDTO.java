@@ -34,6 +34,7 @@ public class AddressDTO {
     @Size(max = 100, message = "A cidade deve possuir no máximo 100 caracteres")
     private String city;
 
+
     private boolean principal;
 
     public AddressDTO() {

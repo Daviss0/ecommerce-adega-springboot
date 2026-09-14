@@ -336,6 +336,44 @@ body {
     font-size: 14px;
 }
 
+.delivery-card {
+    margin-top: 24px;
+}
+
+.delivery-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.delivery-address-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background-color: #eef3fb;
+    color: var(--primary-blue);
+    font-size: 20px;
+}
+
+.delivery-address-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.delivery-address-data strong {
+    color: var(--text-dark);
+    font-size: 15px;
+    font-weight: 800;
+}
+
 @media(max-width: 850px) {
     .details-grid {
         grid-template-columns: 1fr;
@@ -381,6 +419,16 @@ body {
     .details-card-body {
         padding-left: 18px;
         padding-right: 18px;
+    }
+
+    .delivery-address {
+        gap: 12px;
+    }
+
+    .delivery-address-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
 }
 

@@ -207,8 +207,72 @@
             </aside>
         </div>
 
-        <!-- ÁREA PREPARADA PARA FUTURO
-        quando for implementado o checkout vai ter endereço de entrega, forma de pagamento e status do pagamento-->
+       <section class="details-card delivery-card">
+
+           <div class="details-card-header">
+
+               <div class="header-title">
+
+                   <div class="header-icon">
+                       <i class="bi bi-geo-alt"></i>
+                   </div>
+
+                   <div>
+                       <h2>Endereço de entrega</h2>
+                       <p>Endereço informado no momento da compra.</p>
+                   </div>
+               </div>
+           </div>
+
+           <div class="details-card-body">
+
+               <div class="delivery-address">
+
+                   <div class="delivery-address-icon">
+                       <i class="bi bi-house-door"></i>
+                   </div>
+
+                   <div class="delivery-address-data">
+
+                       <strong>
+                           <span th:text="${order.deliveryStreet}">
+                               Rua Exemplo
+                           </span>,
+                           <span th:text="${order.deliveryNumber}">
+                               123
+                           </span>
+                       </strong>
+
+                       <span th:if="${order.deliveryComplement != null and !#strings.isEmpty(order.deliveryComplement)}"
+                       th:text="${order.deliveryComplement}">
+                           Apartamento 10
+                       </span>
+
+                       <span>
+                           <span th:text="${order.deliveryHood}">
+                               Bairro
+                           </span>
+                           -
+                           <span th:text="${order.deliveryCity}">
+                               São Paulo
+                           </span>
+                           /
+                           <span th:text="${order.deliveryState}">
+                               SP
+                           </span>
+                       </span>
+
+                       <span>
+                           CEP:
+                           <span th:text="${order.deliveryCep}">
+                               00000-000
+                           </span>
+                       </span>
+                   </div>
+               </div>
+           </div>
+       </section>
+
         </div>
 </main>
 

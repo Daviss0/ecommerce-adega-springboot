@@ -218,9 +218,19 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Estoque</label>
-        <input type="number" th:field="*{stock}" class="form-control" min="0" required>
+        <label class="form-label">Estoque atual</label>
+
+        <input type="number" th:value="${product.stock}" class="form-control" disabled>
+
+        <div class="form-text">
+          O estoque deve ser alterado pelo módulo de controle de estoque.
+        </div>
       </div>
+
+      <a th:href="@{/admin/stock}" class="btn btn-outline-primary mb-3">
+        <i class="bi bi-box-seam"></i>
+        Gerenciar estoque
+      </a>
 
       <div class="mb-4">
         <label class="form-label">Status</label>

@@ -124,6 +124,7 @@ public class ProductController {
           }
 
           product.setActive(true);
+          product.setStock(0);
 
           productRepository.save(product);
           return "redirect:/admin/products";

@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<Order> findAll() {
-        return orderRepository.findAll();
+        return orderRepository.findAllByOrderByOrderDateDesc();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<Order> findByStatus(OrderStatus status) {
-        return orderRepository.findByStatus(status);
+        return orderRepository.findByStatusOrderByOrderDateDesc(status);
     }
 
     @Override

@@ -10,6 +10,8 @@ public interface CartService {
 
     CartDTO getCart(String email);
 
+    CartDTO getCartForCheckout(String email);
+
     void addProduct(String email, AddCartDTO dto);
 
     void increaseQuantity(String email, Long cartItemId);

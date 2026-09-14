@@ -178,6 +178,19 @@
             opacity: 0.85;
             color: #fff;
         }
+
+        .order-address {
+            padding: 14px 16px;
+            background: #f8fbfd;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+        }
+
+        .order-address h6 {
+            margin-bottom: 10px;
+            color: #1e6fa8;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -350,6 +363,47 @@
 
                                 <hr>
 
+                                <div class="order-address mb-4">
+
+
+                                <h6>Endereço de Entrega</h6>
+
+                                <div class="mb-4">
+
+                                    <p class="mb-1">
+                                        <strong>Endereços:</strong>
+
+                                        <span th:text="${order.deliveryStreet}"></span>,
+                                        <span th:text="${order.deliveryNumber}"></span>
+                                    </p>
+
+                                    <p class="mb-1" th:if="${order.deliveryComplement != null and !#strings.isEmpty(order.deliveryComplement)}">
+
+                                        <strong>Complemento:</strong>
+
+                                        <span th:text="${order.DeliveryComplement}"></span>
+                                    </p>
+
+                                    <p class="mb-1">
+                                        <strong>Bairro:</strong>
+                                        <span th:text="${order.deliveryHood}"></span>
+                                    </p>
+
+                                    <p class="mb-1">
+                                        <strong>Cidade:</strong>
+                                        <span th:text="${order.deliveryCity}"></span>
+                                        <span th:text="${order.deliveryState}"></span>
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <strong>CEP:</strong>
+                                        <span th:text="${order.deliveryCep}"></span>
+                                    </p>
+                                </div>
+                                </div>
+
+                                <hr>
+
                                 <h6>Itens do Pedido</h6>
 
                                 <table class="table table-sm">
@@ -370,7 +424,7 @@
                                     </tr>
 
                                     <tr th:each="item : ${order.items}">
-                                        <td th:text="${item.product.name}"></td>
+                                        <td th:text="${item.productName}"></td>
                                         <td th:text="${item.quantity}"></td>
                                         <td th:text="${#numbers.formatCurrency(item.unitPrice)}"></td>
                                         <td th:text="${#numbers.formatCurrency(item.subtotal)}"></td>

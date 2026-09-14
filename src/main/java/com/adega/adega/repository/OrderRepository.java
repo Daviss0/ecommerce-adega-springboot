@@ -5,6 +5,7 @@ import com.adega.adega.enumerated.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,14 +26,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     //parte administrativa
 
     //filtro utilizado pelo adm
-    List<Order> findByStatus(OrderStatus status);
+    List<Order> findAllByOrderByOrderDateDesc();
+
+    List<Order> findByStatusOrderByOrderDateDesc(OrderStatus status);
 
     //busca administrativa por nome do cliente
     @Query("""
-        SELECT o
-        FROM Order o
-        WHERE LOWER(o.client.user.name)
-        LIKE LOWER(CONCAT('%', :keyword, '%'))
-    """)
-    List<Order> searchOrders(String keyword);
+    SELECT o
+    FROM Order o
+    WHERE LOWER(o.client.user.name)
+    LIKE LOWER(CONCAT('%', :keyword, '%'))
+""")
+    List<Order> searchOrders(
+            @Param("keyword") String keyword
+    );
+
+
 }

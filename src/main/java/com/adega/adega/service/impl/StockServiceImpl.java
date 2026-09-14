@@ -5,6 +5,7 @@ import com.adega.adega.entity.Order;
 import com.adega.adega.entity.Product;
 import com.adega.adega.entity.StockMovement;
 import com.adega.adega.enumerated.StockMovementType;
+import com.adega.adega.exception.InsufficientStockException;
 import com.adega.adega.exception.ProductNotFoundException;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.repository.StockMovementRepository;
@@ -79,18 +80,17 @@ public class StockServiceImpl implements StockService {
     ) {
 
         if (quantity == null || quantity <= 0) {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "A quantidade deve ser maior que zero."
             );
         }
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() ->
-                        new RuntimeException("Produto não encontrado.")
-                );
+                      new ProductNotFoundException("Produto não encontrado."));
 
-        if (product.getStock() < quantity) {
-            throw new IllegalArgumentException(
+        if (product.getStock() == null || product.getStock() < quantity) {
+            throw new InsufficientStockException(
                     "Estoque insuficiente para realizar a saída."
             );
         }
