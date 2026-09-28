@@ -273,6 +273,70 @@
            </div>
        </section>
 
+        <section class="details-card tracking-card">
+
+            <div class="details-card-header">
+
+                <div class="header-title">
+
+                    <div class="header-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div>
+                        <h2>Acompanhamento do pedido</h2>
+                        <p>Acompanhe as atualizações do seu pedido.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-card-body">
+
+                <div th:if="${history == null or #lists.isEmpty(history)}" class="tracking-empty">
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>Ainda não há atualizações disponíveis para este pedido.</span>
+                </div>
+
+                <div th:unless="${history == null or #lists.isEmpty(history)}" class="tracking-list">
+
+                    <div th:each="entry : ${history}" class="tracking-item" th:classappend="${entry.newStatus.name() == 'CANCELED'} ? ' tracking-item-canceled' : ''">
+
+                        <div class="tracking-marker">
+
+                            <i th:if="${entry.newStatus.name() != 'CANCELED'}" class="bi bi-check-lg"></i>
+
+                            <i th:if="${entry.newStatus.name() == 'CANCELED'}" class="bi bi-x-lg"></i>
+                        </div>
+
+                        <div class="tracking-content">
+
+                            <strong th:if="${entry.previousStatus == null}">
+                                Pedido realizado
+                            </strong>
+
+                            <strong th:if="${entry.newStatus.name() == 'SHIPPED'}">
+                                Saiu para entrega
+                            </strong>
+
+                            <strong th:if="${entry.newStatus.name() == 'DELIVERED'}">
+                                Pedido entregue
+                            </strong>
+
+                            <strong th:if="${entry.newStatus.name() == 'CANCELED'}">
+                                Pedido cancelado
+                            </strong>
+
+                            <span th:text="${#temporals.format(entry.changedAt, 'dd/MM/yyyy ''às'' HH:mm')}">
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         </div>
 </main>
 

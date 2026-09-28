@@ -9,15 +9,13 @@ import com.adega.adega.entity.*;
 import com.adega.adega.enumerated.OrderStatus;
 import com.adega.adega.exception.*;
 import com.adega.adega.mapper.CheckoutMapper;
-import com.adega.adega.repository.CheckoutAttemptRepository;
-import com.adega.adega.repository.ClientRepository;
-import com.adega.adega.repository.OrderRepository;
-import com.adega.adega.repository.ProductRepository;
+import com.adega.adega.repository.*;
 import com.adega.adega.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,10 +31,12 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final CepValidationService cepValidationService;
     private final CheckoutMapper checkoutMapper;
     private final CheckoutAttemptRepository checkoutAttemptRepository;
+    private final OrderStatusHistoryRepository orderStatusHistoryRepository;
 
     public CheckoutServiceImpl(CartService cartService, AddressService addressService, ClientRepository clientRepository,
                                ProductRepository productRepository, OrderRepository orderRepository, StockService stockService,
-                               CepValidationService cepValidationService, CheckoutMapper checkoutMapper, CheckoutAttemptRepository checkoutAttemptRepository) {
+                               CepValidationService cepValidationService, CheckoutMapper checkoutMapper, CheckoutAttemptRepository checkoutAttemptRepository,
+                               OrderStatusHistoryRepository orderStatusHistoryRepository) {
         this.cartService = cartService;
         this.addressService = addressService;
         this.clientRepository = clientRepository;
@@ -46,6 +46,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         this.cepValidationService = cepValidationService;
         this.checkoutMapper = checkoutMapper;
         this.checkoutAttemptRepository = checkoutAttemptRepository;
+        this.orderStatusHistoryRepository = orderStatusHistoryRepository;
     }
 
 
@@ -110,6 +111,8 @@ public class CheckoutServiceImpl implements CheckoutService {
             order.setTotalAmount(total);
 
             Order savedOrder = orderRepository.save(order);
+
+            registerInitialStatusHistory(savedOrder, normalizedEmail);
 
             for (CartItemDTO cartItem : cart.getItems()) {
                 stockService.removeStock(cartItem.getProductId(),
@@ -191,5 +194,17 @@ public class CheckoutServiceImpl implements CheckoutService {
             throw new IllegalArgumentException("E-mail do cliente não informado.");
         }
         return email.trim().toLowerCase();
+    }
+
+    private void registerInitialStatusHistory(Order order, String userName) {
+        OrderStatusHistory history = new OrderStatusHistory();
+
+        history.setOrder(order);
+        history.setPreviousStatus(null);
+        history.setNewStatus(OrderStatus.PENDING);
+        history.setChangedAt(LocalDateTime.now());
+        history.setChangedBy(userName);
+
+        orderStatusHistoryRepository.save(history);
     }
 }

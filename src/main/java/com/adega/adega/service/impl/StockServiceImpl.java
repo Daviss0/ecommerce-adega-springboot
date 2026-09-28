@@ -35,6 +35,12 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public void addStock(Long productId, Integer quantity, String reason, String userName) {
+        addStock(productId, quantity, reason, userName, null);
+    }
+
+    @Override
+    @Transactional
+    public void addStock(Long productId, Integer quantity, String reason, String userName, Order order) {
 
         if(quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
@@ -48,6 +54,7 @@ public class StockServiceImpl implements StockService {
 
         StockMovement movement = StockMovement.builder()
                 .product(product)
+                .order(order)
                 .type(StockMovementType.ENTRADA)
                 .quantity(quantity)
                 .reason(reason)

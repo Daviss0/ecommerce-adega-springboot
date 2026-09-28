@@ -374,6 +374,88 @@ body {
     font-weight: 800;
 }
 
+.tracking-card {
+    margin-top: 24px;
+}
+
+.tracking-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.tracking-item {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    padding-bottom: 26px;
+}
+
+.tracking-item:last-child {
+    padding-bottom: 0;
+}
+
+.tracking-item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 34px;
+    bottom: 0;
+    width: 2px;
+    background-color: #dce6f3;
+}
+
+.tracking-marker {
+    position: relative;
+    z-index: 1;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #e6f6ed;
+    color: #168a45;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.tracking-item-canceled .tracking-marker {
+    background-color: #ffe4e4;
+    color: #b42323;
+}
+
+.tracking-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 2px;
+}
+
+.tracking-content strong {
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.tracking-content span {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.tracking-empty {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.tracking-empty i {
+    color: var(--primary-blue);
+    font-size: 18px;
+}
+
 @media(max-width: 850px) {
     .details-grid {
         grid-template-columns: 1fr;

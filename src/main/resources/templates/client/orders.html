@@ -26,6 +26,15 @@
 <main class="order-container">
     <div class="page-header">
 
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            <span th:text="${errorMessage}"></span>
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+        </div>
+
         <div>
             <h2>Meus Pedidos</h2>
             <p>Acompanhe seus pedidos e consulte compras anteriores.</p>
@@ -74,15 +83,19 @@
                     <div class="order-date">
                         <i class="bi bi-calendar3"></i>
 
-                        <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">
+                        <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy ''às'' HH:mm')}">
                             11/08/2026 20:00
                         </span>
                     </div>
                 </div>
 
-                <span class="status-badge" th:classappend="'status-' + ${order.status}" th:text="${order.status.description}">
-                    Aguardando pagamento
-                </span>
+               <span class="status-badge" th:classappend="${'status-' + order.status}">
+                   <span class="status-dot"></span>
+
+                   <span th:text="${order.status.description}">
+                       Pedido recebido
+                   </span>
+               </span>
             </div>
 
             <div class="order-info">

@@ -16,7 +16,11 @@ public interface OrderService {
 
     List<Order> findByStatus(OrderStatus status);
 
-    Order updateStatus(Long id, OrderStatus status);
+    Order markAsShipped(Long id, String userName);
+
+    Order markAsDelivered(Long id, String userName);
+
+    Order cancel(Long id, String userName);
 
     //CLIENT
 

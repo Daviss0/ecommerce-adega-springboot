@@ -132,16 +132,6 @@
             color: #856404;
         }
 
-        .status-PAID {
-            background: #d1f7e0;
-            color: #168a45;
-        }
-
-        .status-PROCESSING {
-            background: #dff7ff;
-            color: #1e6fa8;
-        }
-
         .status-SHIPPED {
             background: #dbe7ff;
             color: #3157b7;
@@ -170,9 +160,6 @@
             background: #35c4d9;
         }
 
-        .btn-status {
-            background: #5a83e6;
-        }
 
         .action-btn:hover {
             opacity: 0.85;
@@ -190,6 +177,159 @@
             margin-bottom: 10px;
             color: #1e6fa8;
             font-weight: 700;
+        }
+
+        .order-history {
+            padding: 14px 16px;
+            background: #f8fbfd;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+        }
+
+        .order-modal-header {
+            background: #f8fbfd;
+            border-bottom: 1px solid #e3edf5;
+        }
+
+        .order-modal-title {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .order-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .order-summary-card {
+            padding: 16px;
+            background: #f8fbfd;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+        }
+
+        .order-summary-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #1e6fa8;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .order-summary-value {
+            color: #1f2937;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .order-summary-secondary {
+            display: block;
+            margin-top: 3px;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            margin-top: 20px;
+            padding: 16px 18px;
+            background: #f8fbfd;
+            border: 1px solid #e3edf5;
+            border-radius: 12px;
+        }
+
+        .order-total-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .order-total-value {
+            color: #1e6fa8;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .admin-history-item {
+            position: relative;
+            display: flex;
+            gap: 14px;
+            padding-bottom: 22px;
+        }
+
+        .admin-history-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .admin-history-item:not(:last-child)::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 31px;
+            bottom: 0;
+            width: 2px;
+            background: #dce6f3;
+        }
+
+        .admin-history-marker {
+            position: relative;
+            z-index: 1;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #e8f1ff;
+            color: #1e6fa8;
+            font-size: 14px;
+        }
+
+        .admin-history-item.history-canceled .admin-history-marker {
+            background: #ffe4e4;
+            color: #b42323;
+        }
+
+        .admin-history-item.history-delivered .admin-history-marker {
+            background: #e6f6ed;
+            color: #168a45;
+        }
+
+        .admin-history-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding-top: 2px;
+        }
+
+        .admin-history-title {
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .admin-history-meta {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .admin-history-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media(max-width: 768px) {
+            .order-summary {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -260,6 +400,23 @@
         </form>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+
+        <span th:text="${successMessage}"></span>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+        <span th:text="${errorMessage}"></span>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert">
+        </button>
+    </div>
+
     <div class="orders-card">
 
         <div class="orders-header">
@@ -312,12 +469,62 @@
                             <i class="bi bi-eye"></i>
                         </a>
 
-                        <a href="#"
-                           class="action-btn btn-status"
-                           data-bs-toggle="modal"
-                           th:data-bs-target="'#statusOrderModal' + ${order.id}">
-                            <i class="bi bi-arrow-repeat"></i>
-                        </a>
+                        <!-- AÇÕES PARA PEDIDO PENDENTE -->
+                        <div th:if="${order.status.name() == 'PENDING'}"
+                             class="d-inline-flex gap-1">
+
+                            <form th:action="@{/admin/orders/{id}/ship(id=${order.id})}"
+                                  method="post"
+                                  class="d-inline">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-primary">
+                                    Saiu para entrega
+                                </button>
+                            </form>
+
+                            <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}"
+                                  method="post"
+                                  class="d-inline">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    Cancelar
+                                </button>
+                            </form>
+
+                        </div>
+
+
+                        <!-- AÇÕES PARA PEDIDO QUE SAIU PARA ENTREGA -->
+                        <div th:if="${order.status.name() == 'SHIPPED'}"
+                             class="d-inline-flex gap-1">
+
+                            <form th:action="@{/admin/orders/{id}/deliver(id=${order.id})}"
+                                  method="post"
+                                  class="d-inline">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-success">
+                                    Confirmar entrega
+                                </button>
+
+                            </form>
+
+                        </div>
+
                     </td>
 
                 </tr>
@@ -335,43 +542,65 @@
                         <div class="modal-content rounded-4">
 
 
-                            <div class="modal-header">
-                                <h5 class="modal-title" th:text="'Pedido #' + ${order.id}"></h5>
+                            <div class="modal-header order-modal-header">
 
-                                <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal">
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <h5 class="modal-title order-modal-title mb-0" th:text="'Pedido #' + ${order.id}">
+                                    </h5>
+
+                                    <span class="status-badge" th:classappend="'status-' + ${order.status}" th:text="${order.status.description}">
+                                    </span>
+                                </div>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal">
                                 </button>
                             </div>
 
                             <div class="modal-body">
 
-                                <p>
-                                  <strong>Cliente:</strong>
-                                    <span th:text="${order.client.user.name}"></span>
-                                </p>
+                               <div class="order-summary">
 
-                                <p>
-                                    <strong>Data:</strong>
-                                    <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                </p>
+                                   <div class="order-summary-card">
+                                       <span class="order-summary-label">
+                                           <i class="bi bi-person me-2"></i>
+                                           Cliente
+                                       </span>
 
-                                <p>
-                                    <strong>Status:</strong>
-                                    <span th:text="${order.status.description}"></span>
-                                </p>
+                                       <div class="order-summary-value" th:text="${order.client.user.name}">
+                                       </div>
 
-                                <hr>
+                                       <span class="order-summary-secondary" th:text="${order.client.user.email}">
+                                       </span>
+                                   </div>
+
+                                   <div class="order-summary-card">
+                                       <span class="order-summary-label">
+                                           <i class="bi bi-calendar3 me-1"></i>
+                                           Data do pedido
+                                       </span>
+
+                                       <div class="order-summary-value" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy ''às'' HH:mm')}">
+                                       </div>
+
+                                       <span class="order-summary-secondary">
+                                           Data e horário da realização do pedido
+                                       </span>
+                                   </div>
+                               </div>
 
                                 <div class="order-address mb-4">
 
 
-                                <h6>Endereço de Entrega</h6>
+                                <h6>
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    Endereço de Entrega
+                                </h6>
 
                                 <div class="mb-4">
 
                                     <p class="mb-1">
-                                        <strong>Endereços:</strong>
+                                        <strong>Endereço:</strong>
 
                                         <span th:text="${order.deliveryStreet}"></span>,
                                         <span th:text="${order.deliveryNumber}"></span>
@@ -381,7 +610,7 @@
 
                                         <strong>Complemento:</strong>
 
-                                        <span th:text="${order.DeliveryComplement}"></span>
+                                        <span th:text="${order.deliveryComplement}"></span>
                                     </p>
 
                                     <p class="mb-1">
@@ -392,6 +621,7 @@
                                     <p class="mb-1">
                                         <strong>Cidade:</strong>
                                         <span th:text="${order.deliveryCity}"></span>
+                                        -
                                         <span th:text="${order.deliveryState}"></span>
                                     </p>
 
@@ -404,7 +634,10 @@
 
                                 <hr>
 
-                                <h6>Itens do Pedido</h6>
+                                <h6 class="mb-3">
+                                    <i class="bi bi-bag-check me-1"></i>
+                                    Produtos
+                                </h6>
 
                                 <table class="table table-sm">
                                     <thead>
@@ -432,68 +665,123 @@
                                     </tbody>
                                 </table>
 
-                                <h5 class="text-end mt-5">
-                                    Total:
-                                    <span th:text="${#numbers.formatCurrency(order.totalAmount)}"></span>
-                                </h5>
+                                <div class="order-history mt-4">
 
+                                    <h6 class="mb-3">
+                                        <i class="bi bi-clock-history me-2"></i>
+                                        Histórico de pedido
+                                    </h6>
+
+                                    <div th:with="history=${orderHistories[order.id]}">
+
+                                        <div th:if="${history == null or #lists.isEmpty(history)}" class="text-muted small">
+                                            Nenhum histórico registrado para este pedido.
+                                        </div>
+
+                                        <div th:unless="${history == null or #lists.isEmpty(history)}" class="admin-history-list">
+
+                                            <div th:each="entry : ${history}" class="admin-history-item"
+                                                 th:classappend="${entry.newStatus.name() == 'CANCELED'}
+                                                  ? ' history-canceled'
+                                                  : (${entry.newStatus.name() == 'DELIVERED'}
+                                                  ? ' history-delivered'
+                                                  : '')">
+
+                                                <div class="admin-history-marker">
+
+                                                    <i th:if="${entry.newStatus.name() == 'CANCELED'}" class="bi bi-x-lg"></i>
+
+                                                    <i th:unless="${entry.newStatus.name() == 'CANCELED'}" class="bi bi-check-lg"></i>
+                                                </div>
+
+                                                <div class="admin-history-content">
+
+                                                    <div class="admin-history-title" th:if="${entry.previousStatus == null}">
+                                                        Pedido realizado
+                                                    </div>
+
+                                                    <div class="admin-history-title" th:unless="${entry.previousStatus == null}">
+
+                                                        <span th:text="${entry.previousStatus.description}"></span>
+                                                        →
+                                                        <span th:text="${entry.newStatus.description}"></span>
+                                                    </div>
+
+                                                    <div class="admin-history-meta">
+                                                        <i class="bi bi-calendar3 me-1"></i>
+
+                                                        <span th:text="${#temporals.format(entry.changedAt, 'dd/MM/yyyy ''às'' HH:mm')}">
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="admin-history-meta">
+                                                        <i class="bi bi-person me-2"></i>
+                                                        <span th:text="${entry.changedBy}"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="order-total">
+
+                                    <span class="order-total-label">
+                                        Total do pedido
+                                    </span>
+
+                                    <span class="order-total-value" th:text="${#numbers.formatCurrency(order.totalAmount)}">
+                                    </span>
+                                </div>
                             </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Fechar
+                                </button>
+
+                                <div th:if="${order.status.name() == 'PENDING'}" class="d-flex gap-2">
+
+                                    <form th:action="@{/admin/orders/{id}/cancel(id=${order.id})}" method="post">
+
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-x-circle me-2"></i>
+                                            Cancelar pedido
+                                        </button>
+                                    </form>
+
+                                    <form th:action="@{/admin/orders/{id}/ship(id=${order.id})}" method="post">
+
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-truck me-1"></i>
+                                            Saiu para entrega
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div th:if="${order.status.name() == 'SHIPPED'}">
+
+                                    <form th:action="@{/admin/orders/{id}/deliver(id=${order.id})}" method="post">
+
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Confirmar entrega
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
 
-                <div class="modal fade"
-                th:id="'statusOrderModal' + ${order.id}"
-                tabindex="-1">
-
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content rounded-4">
-
-                            <form th:action="@{/admin/orders/status/{id}(id=${order.id})}" method="post">
-
-                                <input type="hidden"
-                                th:name="${_csrf.parameterName}"
-                                th:value="${_csrf.token}">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title" th:text="'Alterar Status - Pedido #' + ${order.id}"></h5>
-
-                                    <button type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal">
-                                    </button>
-                                </div>
-
-                                <div class="modal-body">
-
-                                    <label class="form-label">Status do Pedido</label>
-
-                                    <select name="status" class="form-select" required>
-                                        <option th:each="status : ${statuses}"
-                                                th:value="${status}"
-                                                th:text="${status.description}"
-                                                th:selected="${order.status == status}">
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button"
-                                            class="btn btn-secondary"
-                                            data-bs-dismiss="modal">
-                                        Cancelar
-                                    </button>
-
-                                    <button type="submit" class="btn btn-primary">
-                                        Salvar
-                                    </button>
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
             </th:block>
         </div>
     </div>

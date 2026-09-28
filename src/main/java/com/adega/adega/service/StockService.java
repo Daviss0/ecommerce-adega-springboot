@@ -12,6 +12,9 @@ public interface StockService {
 
     void addStock(Long productId, Integer quantity, String reason, String userName);
 
+    void addStock(Long productId, Integer quantity, String reason, String userName, Order order);
+
+
     void removeStock(Long productId, Integer quantity, String reason, String userName, Order order);
 
     void removeStock(Long productId, Integer quantity, String reason, String userName);
