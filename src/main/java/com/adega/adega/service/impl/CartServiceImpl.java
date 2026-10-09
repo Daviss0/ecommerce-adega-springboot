@@ -19,6 +19,7 @@ import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.service.CartService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.adega.adega.exception.ClientNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -83,11 +84,11 @@ public class CartServiceImpl implements CartService {
     public void addProduct(String email, AddCartDTO dto) {
 
         if(dto == null) {
-            throw new IllegalArgumentException("Os dados do produto são obrigatórios.");
+            throw new CartException("Os dados do produto são obrigatórios.");
         }
 
         if (dto.getQuantity() == null || dto.getQuantity() <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+            throw new CartException("A quantidade deve ser maior que zero.");
         }
 
         Cart cart = getOrCreateCart(email);
@@ -151,7 +152,7 @@ public class CartServiceImpl implements CartService {
         int newQuantity = item.getQuantity() - 1;
 
         if(newQuantity <= 0) {
-            throw new IllegalArgumentException("A quantidade do produto não pode ser zero ou negativa.");
+            throw new CartException("A quantidade do produto não pode ser zero ou negativa.");
         }
 
         item.setQuantity(newQuantity);
@@ -220,7 +221,7 @@ public class CartServiceImpl implements CartService {
 
         return cartRepository.findByClientUserEmail(normalizedEmail).orElseGet(() ->{
             Client client = clientRepository.findByUser_Email(normalizedEmail)
-                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
+                    .orElseThrow(() -> new ClientNotFoundException("Cliente não encontrado."));
 
             Cart cart = new Cart();
             cart.setClient(client);
@@ -240,7 +241,7 @@ public class CartServiceImpl implements CartService {
 
     private CartItem getClientCartItem(Cart cart, Long cartItemId) {
         if (cartItemId == null) {
-            throw new IllegalArgumentException("Item do carrinho não informado.");
+            throw new CartException("Item do carrinho não informado.");
         }
         return cart.getItems().stream().filter(item -> cartItemId.equals(item.getId()))
                 .findFirst().orElseThrow(() -> new CartException("Item não encontrado no carrinho."));
@@ -248,7 +249,7 @@ public class CartServiceImpl implements CartService {
 
     private Product getValidProduct(Long productId) {
         if(productId == null) {
-            throw new IllegalArgumentException("Produto não informado.");
+            throw new CartException("Produto não informado.");
         }
 
         Product product = productRepository.findById(productId)
@@ -270,7 +271,7 @@ public class CartServiceImpl implements CartService {
 
     private void validateStock(Product product, int desiredQuantity) {
         if (desiredQuantity <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+            throw new CartException("A quantidade deve ser maior que zero.");
         }
 
         if (product.getStock() == null || product.getStock() < desiredQuantity) {
@@ -282,7 +283,7 @@ public class CartServiceImpl implements CartService {
 
     private String normalizeEmail(String email) {
         if(email == null || email.isBlank()) {
-            throw new IllegalArgumentException("E-mail do cliente não informado.");
+            throw new CartException("E-mail do cliente não informado.");
         }
         return email.trim().toLowerCase();
     }

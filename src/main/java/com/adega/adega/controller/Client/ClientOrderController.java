@@ -3,17 +3,14 @@ package com.adega.adega.controller.Client;
 import com.adega.adega.dto.order.ClientOrderDetailsDTO;
 import com.adega.adega.dto.order.ClientOrderSummaryDTO;
 import com.adega.adega.entity.OrderStatusHistory;
-import com.adega.adega.exception.OrderNotFoundException;
 import com.adega.adega.repository.OrderStatusHistoryRepository;
 import com.adega.adega.service.OrderService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -53,12 +50,5 @@ public class ClientOrderController {
         return "client/order-details";
     }
 
-    @ExceptionHandler(OrderNotFoundException.class)
-    public String orderNotFound(OrderNotFoundException ex,
-                                RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-
-        return "redirect:/client/orders";
-    }
 }

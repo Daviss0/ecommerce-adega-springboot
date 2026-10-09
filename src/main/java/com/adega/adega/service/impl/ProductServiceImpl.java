@@ -1,6 +1,7 @@
 package com.adega.adega.service.impl;
 
 import com.adega.adega.entity.Product;
+import com.adega.adega.exception.ProductImageException;
 import com.adega.adega.exception.ProductNotFoundException;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.service.ProductService;
@@ -40,7 +41,8 @@ public class ProductServiceImpl implements ProductService {
             }
 
             catch (IOException e) {
-                throw new RuntimeException("Erro ao atualizar imagem");
+                throw new ProductImageException(
+                        "Não foi possível processar a imagem do produto.",e);
             }
         }
         productRepository.save(existingProduct);

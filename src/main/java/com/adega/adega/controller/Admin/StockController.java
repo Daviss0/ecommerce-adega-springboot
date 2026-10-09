@@ -3,6 +3,7 @@ package com.adega.adega.controller.Admin;
 
 import com.adega.adega.entity.Order;
 import com.adega.adega.service.StockService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,19 +31,14 @@ public class StockController {
     public String addStock(@PathVariable Long id,
                             @RequestParam Integer quantity,
                             @RequestParam String reason,
-                            Principal principal,
+                            Authentication authentication,
                            RedirectAttributes redirectAttributes) {
-        try {
-            String userName = principal != null ? principal.getName() : "Sistema";
 
-            stockService.addStock(id, quantity, reason, userName);
 
-            redirectAttributes.addAttribute("success", "Entrada de estoque realizada com sucesso.");
-        }
+            stockService.addStock(id, quantity, reason, authentication.getName());
 
-        catch(RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
+            redirectAttributes.addAttribute("successMessage", "Entrada de estoque realizada com sucesso.");
+
         return "redirect:/admin/stock";
     }
 
@@ -50,20 +46,13 @@ public class StockController {
     public String removeStock(@PathVariable Long id,
                                @RequestParam Integer quantity,
                                @RequestParam String reason,
-                               Principal principal,
+                               Authentication authentication,
                               RedirectAttributes redirectAttributes) {
-        try {
-            String userName = principal != null ? principal.getName() : "Sistema";
 
-
-            stockService.removeStock(id, quantity, reason, userName);
+            stockService.removeStock(id, quantity, reason, authentication.getName());
 
             redirectAttributes.addFlashAttribute("success", "Saída de estoque realizada com sucesso.");
-        }
-        catch (RuntimeException e) {
 
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
         return "redirect:/admin/stock";
     }
 

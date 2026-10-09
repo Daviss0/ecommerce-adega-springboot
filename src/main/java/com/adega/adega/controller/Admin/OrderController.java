@@ -3,8 +3,6 @@ package com.adega.adega.controller.Admin;
 import com.adega.adega.entity.Order;
 import com.adega.adega.entity.OrderStatusHistory;
 import com.adega.adega.enumerated.OrderStatus;
-import com.adega.adega.exception.InvalidOrderStatusTransitionException;
-import com.adega.adega.exception.OrderNotFoundException;
 import com.adega.adega.repository.OrderStatusHistoryRepository;
 import com.adega.adega.service.OrderService;
 import org.springframework.security.core.Authentication;
@@ -90,25 +88,5 @@ public class OrderController {
         return "redirect:/admin/orders";
    }
 
-   //metodo para tratamento de erro
-    @ExceptionHandler(InvalidOrderStatusTransitionException.class)
-    public String handleInvalidStatusTransition(InvalidOrderStatusTransitionException ex,
-                                                RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        return "redirect:/admin/orders";
-    }
-
-    @ExceptionHandler(OrderNotFoundException.class)
-    public String handleOrderNotFound(
-            OrderNotFoundException ex,
-            RedirectAttributes redirectAttributes) {
-
-        redirectAttributes.addFlashAttribute(
-                "errorMessage",
-                ex.getMessage()
-        );
-
-        return "redirect:/admin/orders";
-    }
 }

@@ -35,13 +35,11 @@ public class AdminClientController {
     @PostMapping("/delete/{id}")
     public String deactivateClient(@PathVariable Long id,
                                RedirectAttributes redirectAttributes) {
-        try {
+
             clientService.deactivateClient(id);
+
             redirectAttributes.addFlashAttribute("successMessage", "Cliente desativado com sucesso!");
-        }
-        catch (RuntimeException exception) {
-            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
-        }
+
         return "redirect:/admin/clients";
     }
 

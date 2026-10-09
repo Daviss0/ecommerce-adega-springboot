@@ -343,53 +343,26 @@
 
                 <hr>
 
-                <h6 class="text-primary mb-3">Endereço de Faturamento</h6>
-
-                <div th:if="${client.billingAddress != null}">
-                  <p>
-                    <strong>CEP:</strong>
-                    <span th:text="${client.billingAddress.cep}"></span>
-                  </p>
-
-                  <p>
-                    <strong>Rua:</strong>
-                    <span th:text="${client.billingAddress.street}"></span>
-                    <span th:text="${client.billingAddress.number}"></span>
-                  </p>
-
-                  <p>
-                    <strong>Complemento:</strong>
-                    <span th:text="${client.billingAddress.complement}"></span>
-                  </p>
-
-                  <p>
-                    <strong>Bairro:</strong>
-                    <span th:text="${client.billingAddress.hood}"></span>
-                  </p>
-
-                  <p>
-                    <strong>Cidade/Estado:</strong>
-                    <span th:text="${client.billingAddress.city}"></span>
-                    <span th:text="${client.billingAddress.state}"></span>
-                  </p>
-                </div>
-
-                <div th:if="${client.billingAddress == null}">
-                  <p class="text-muted">Endereço de faturamento não cadastrado.</p>
-                </div>
-
                 <hr>
 
-                <h6 class="text-primary mb-3">Endereços de Entrega</h6>
+                <h6 class="text-primary mb-3">Endereços</h6>
 
-                <div th:if="${#lists.isEmpty(client.deliveryAddresses)}">
-                  <p class="text-muted">Nenhum endereço de entrega cadastrado.</p>
+                <div th:if="${#lists.isEmpty(client.addresses)}">
+                  <p class="text-muted">
+                    Nenhum endereço cadastrado.
+                  </p>
                 </div>
 
-                <div th:each="address, iterStat : ${client.deliveryAddresses}">
-                  <p>
-                    <strong th:text="'Endereço' + ${iterStat.count} + ':'"></strong>
-                  </p>
+                <div th:each="address, iterStat : ${client.addresses}">
+
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <strong th:text="'Endereço ' + ${iterStat.count}"></strong>
+
+                    <span th:if="${address.principal}"
+                          class="badge bg-primary">
+            Principal
+        </span>
+                  </div>
 
                   <p>
                     <strong>CEP:</strong>
@@ -397,9 +370,14 @@
                   </p>
 
                   <p>
-                    <strong>Rua:</strong>
-                    <span th:text="${address.street}"></span>
+                    <strong>Endereço:</strong>
+                    <span th:text="${address.street}"></span>,
                     <span th:text="${address.number}"></span>
+                  </p>
+
+                  <p th:if="${address.complement != null and !address.complement.isBlank()}">
+                    <strong>Complemento:</strong>
+                    <span th:text="${address.complement}"></span>
                   </p>
 
                   <p>
@@ -408,14 +386,14 @@
                   </p>
 
                   <p>
-                    <strong>Cidade/Estado</strong>
-
+                    <strong>Cidade:</strong>
                     <span th:text="${address.city}"></span>
-                    <span th:text="${address.state}"></span>
                   </p>
 
                   <hr th:if="${!iterStat.last}">
+
                 </div>
+
               </div>
             </div>
           </div>

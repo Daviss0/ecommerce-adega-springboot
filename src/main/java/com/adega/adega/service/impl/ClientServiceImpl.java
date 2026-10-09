@@ -13,6 +13,7 @@ import com.adega.adega.service.ClientService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.adega.adega.exception.ClientNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,12 +86,12 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public void deactivateClient(Long id) {
       Client client = clientRepository.findById(id)
-              .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+              .orElseThrow(() -> new ClientNotFoundException("Cliente não encontrado"));
 
       User user = client.getUser();
 
       if(user == null) {
-          throw new RuntimeException("Usuário relacionado ao cliente não encontrado");
+          throw new ClientNotFoundException("Usuário relacionado ao cliente não encontrado");
       }
 
       user.setActive(false);
@@ -193,7 +194,7 @@ public class ClientServiceImpl implements ClientService {
         String normalizedEmail = email.trim().toLowerCase();
 
         return clientRepository.findByUser_Email(normalizedEmail)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ClientNotFoundException("Cliente não encontrado"));
     }
 
     private void validateRegistration(ClientRegistrationDTO dto) {

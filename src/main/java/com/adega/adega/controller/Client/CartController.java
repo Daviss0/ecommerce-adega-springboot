@@ -42,61 +42,45 @@ public class CartController {
             return "redirect:/store/homepage";
         }
 
-        try {
             cartService.addProduct(authentication.getName(), addCartDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Produto adicionado ao carrinho.");
-        }
-        catch(RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+
+
         return "redirect:/store/homepage";
     }
 
     @PostMapping("/items/{id}/increase")
-    public String increaseItem(@PathVariable Long id, Authentication authentication,RedirectAttributes redirectAttributes) {
+    public String increaseItem(@PathVariable Long id, Authentication authentication) {
 
-        try {
             cartService.increaseQuantity(authentication.getName(), id);
-        }
-        catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+
         return "redirect:/client/cart";
     }
 
     @PostMapping("/items/{id}/decrease")
-    public String decreaseItem(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
-        try {
+    public String decreaseItem(@PathVariable Long id, Authentication authentication) {
+
             cartService.decreaseQuantity(authentication.getName(), id);
-        }
-        catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+
         return "redirect:/client/cart";
     }
 
     @PostMapping("/items/{id}/remove")
     public String deleteItem(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttributes) {
 
-        try {
+
             cartService.removeItem(authentication.getName(), id);
             redirectAttributes.addFlashAttribute("successMessage", "Produto removido do carrinho.");
-        }
-        catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+
         return "redirect:/client/cart";
     }
 
     @PostMapping("/clear")
     public String clearCart(Authentication authentication, RedirectAttributes redirectAttributes) {
-        try {
+
             cartService.clearCart(authentication.getName());
             redirectAttributes.addFlashAttribute("successMessage", "Carrinho esvaziado.");
-        }
-        catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+
         return "redirect:/client/cart";
     }
 

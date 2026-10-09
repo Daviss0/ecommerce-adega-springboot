@@ -2,6 +2,7 @@ package com.adega.adega.config;
 
 import com.adega.adega.enumerated.Role;
 import com.adega.adega.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -17,6 +18,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @Configuration
 public class SecurityConfig {
@@ -40,6 +47,8 @@ public class SecurityConfig {
                         .hasAnyRole("ADMIN", "EMPLOYEE")
                         .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(exception -> exception.accessDeniedHandler(this::handleAccessDenied))
 
                 .formLogin(form -> form
                         .loginPage("/login_adm")
@@ -91,6 +100,9 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler(this::handleAccessDenied))
 
                 .formLogin(form -> form
                         .loginPage("/client/login")
@@ -182,5 +194,35 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder () {
         return new BCryptPasswordEncoder();
+    }
+
+    private void handleAccessDenied(
+            jakarta.servlet.http.HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException exception) throws java.io.IOException {
+
+        String accept = request.getHeader("Accept");
+        String requestedWith = request.getHeader("X-Requested-With");
+
+        boolean htmlNavigation = accept != null && accept.contains(MediaType.TEXT_HTML_VALUE)
+                && !"XMLHttpRequest".equalsIgnoreCase(requestedWith);
+
+        if (!htmlNavigation) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean administrativeUser = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")
+                || authority.getAuthority().equals("ROLE_EMPLOYEE"));
+
+        if (administrativeUser) {
+            response.sendRedirect(request.getContextPath() + "/admin/home");
+        }
+        else {
+            response.sendRedirect(request.getContextPath() + "/store/homepage");
+        }
     }
 }

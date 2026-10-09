@@ -12,6 +12,8 @@ import com.adega.adega.repository.StockMovementRepository;
 import com.adega.adega.service.StockService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.adega.adega.exception.InvalidStockQuantityException;
+import com.adega.adega.exception.InvalidStockQuantityException;
 
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class StockServiceImpl implements StockService {
     public void addStock(Long productId, Integer quantity, String reason, String userName, Order order) {
 
         if(quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+            throw new InvalidStockQuantityException("A quantidade deve ser maior que zero.");
         }
 
         Product product = productRepository.findById(productId)
@@ -87,7 +89,7 @@ public class StockServiceImpl implements StockService {
     ) {
 
         if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException(
+            throw new InvalidStockQuantityException(
                     "A quantidade deve ser maior que zero."
             );
         }
