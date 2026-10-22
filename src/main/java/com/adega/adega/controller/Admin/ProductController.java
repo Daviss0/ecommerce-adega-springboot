@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.adega.adega.util.ProductCategories;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,12 +85,30 @@ public class ProductController {
 
     @PostMapping("/update/{id}")
     public String updateProduct(@PathVariable Long id,
-                                @ModelAttribute Product product,
+                                @Valid @ModelAttribute("product") Product product,
+                                BindingResult result,
                                 @RequestParam("imageFile") MultipartFile imageFile,
+                                Model model,
                                 RedirectAttributes redirectAttributes) {
+
+        if (!ProductCategories.isValid(product.getCategory())) {
+            result.rejectValue("category","category.invalid",
+                    "Selecione uma categoria válida.");
+        }
+
+        if (result.hasErrors()) {
+            product.setId(id);
+
+            Product existingProduct = productService.findById(id);
+            product.setImageData(existingProduct.getImageData());
+            product.setStock(existingProduct.getStock());
+            return "admin/edit_product";
+        }
+
         productService.updateProduct(id, product, imageFile);
 
         redirectAttributes.addFlashAttribute("success", "Produto atualizado com sucesso!");
+
         return "redirect:/admin/products";
     }
 
@@ -98,8 +117,14 @@ public class ProductController {
         BindingResult result,
     @RequestParam ("imageFile") MultipartFile imageFile,
                                Model model) {
+
+        if (!ProductCategories.isValid(product.getCategory())) {
+            result.rejectValue("category", "category.invalid",
+                    "Selecione uma categoria válida");
+        }
+
       if (result.hasErrors()) {
-          return "new_product";
+          return "admin/new_product";
       }
 
       try {
@@ -131,7 +156,7 @@ public class ProductController {
 
       } catch (IOException e) {
           model.addAttribute("errorMessage", "Erro ao salvar imagem do produto");
-          return "new_product";
+          return "admin/new_product";
       }
 
     }
@@ -144,5 +169,10 @@ public class ProductController {
         redirectAttributes.addFlashAttribute("success", "Produto excluído com sucesso!");
 
         return "redirect:/admin/products";
+        }
+
+        @ModelAttribute("categories")
+        public List<String> categories() {
+        return ProductCategories.ALL;
         }
 }

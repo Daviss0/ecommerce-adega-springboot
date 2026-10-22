@@ -1,6 +1,7 @@
 package com.adega.adega.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.server.ResponseStatusException;
+
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -162,6 +165,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public void handleAccessDeniedException(AccessDeniedException exception) {
         throw exception;
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public String handleResponseStatusException(
+            ResponseStatusException exception,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        response.setStatus(exception.getStatusCode().value());
+
+        logger.warn("Erro HTTP {} ao processar a requisição [{} {}]",
+                exception.getStatusCode().value(),
+                request.getMethod(),
+                request.getRequestURI());
+
+        if (exception.getStatusCode().value() == 404) {
+            return "error/404";
+        }
+
+        return "error/500";
     }
 
     @ExceptionHandler(Exception.class)

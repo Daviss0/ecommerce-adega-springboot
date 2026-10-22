@@ -15,4 +15,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryContainingIgnoreCase(String category);
 
     List<Product> findByActiveTrue();
+
+    List<Product> findByActiveTrueAndCategoryIgnoreCase(String category);
+
+    List<Product> findByActiveTrueAndStockGreaterThanAndNameContainingIgnoreCaseOrderByNameAsc(
+            Integer stock,
+            String name
+    );
  }

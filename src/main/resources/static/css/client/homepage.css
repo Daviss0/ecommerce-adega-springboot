@@ -134,6 +134,36 @@ body {
     color: var(--primary-blue);
 }
 
+.category-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+    color: inherit;
+
+    min-height: 125px;
+}
+
+.category-link:hover {
+    text-decoration: none;
+}
+
+.category-link:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+}
+
+
+.category-bootstrap-icon {
+    display: block;
+    font-size: 42px;
+    line-height: 42px;
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+}
+
 .category-icon {
     width: 42px;
     height: 42px;
@@ -148,6 +178,8 @@ body {
     height: 100%;
     position: relative;
     transition: .2s;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-card form {
@@ -313,6 +345,67 @@ body {
     background: #ffffff;
     color: #495057;
 }
+
+
+/* ==========================================
+   CONTROLES DE QUANTIDADE - HOMEPAGE
+   ========================================== */
+
+.home-quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.home-quantity-controls form {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+.home-quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 40px;
+
+    background: var(--primary-blue);
+    color: #fff;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.home-quantity-btn:hover:not(:disabled) {
+    background: var(--secondary-blue);
+}
+
+.home-quantity-btn:disabled {
+    background: #d5d9e0;
+    color: #808792;
+    cursor: not-allowed;
+}
+
+.home-quantity-value {
+    flex: 0 0 32px;
+    text-align: center;
+
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary-blue);
+}
+
 
 @media (max-width: 991.98px) {
 
