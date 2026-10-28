@@ -21,7 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adega.adega.service.ProductService;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.data.domain.Page;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,21 +76,44 @@ public class StoreController {
     }
 
     @GetMapping("/category/{slug}")
-    public String category(@PathVariable String slug, Model model, Authentication authentication) {
+    public String category(@PathVariable String slug,
+                           @RequestParam(required = false) String keyword,
+                           @RequestParam(defaultValue = "name_asc") String sort,
+                           @RequestParam(defaultValue = "0") int page,
+                           Model model, Authentication authentication) {
 
         String category = ProductCategories.fromSlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Categoria não encontrada"
                 ));
 
+        String normalizedKeyword = keyword == null ? "" :keyword.trim();
+
+        String normalizedSort = switch (sort) {
+            case "name_desc", "price_asc", "price_desc" -> sort;
+            default -> "name_asc";
+        };
+
+        Page<Product> productPage = productService.findProductsByCategory(
+                category, normalizedKeyword, normalizedSort, page
+        );
+
         model.addAttribute("categoryName", category);
         model.addAttribute("categorySlug", ProductCategories.toSlug(category));
-        model.addAttribute("products", productRepository.findByActiveTrueAndCategoryIgnoreCase(category));
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("keyword", normalizedKeyword);
+        model.addAttribute("sort", normalizedSort);
+
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalProducts", productPage.getTotalElements());
 
         Map<Long, Integer> quantitiesByProductId = Map.of();
 
         if (authentication != null && authentication.isAuthenticated()
-        && authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_CLIENT"))) {
+        && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_CLIENT"))) {
 
             CartDTO cart = cartService.getCart(authentication.getName());
 
@@ -102,6 +125,7 @@ public class StoreController {
         }
 
         model.addAttribute("quantitiesByProductId", quantitiesByProductId);
+
         return "client/category";
     }
 
@@ -129,7 +153,7 @@ public class StoreController {
         }
             model.addAttribute("quantitiesByProductId", quantitiesByProductId);
 
-            return "/client/search";
+            return "client/search";
         }
 
 

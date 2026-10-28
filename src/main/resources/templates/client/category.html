@@ -52,15 +52,93 @@
             </p>
         </div>
 
+
+        <div class="category-filters mb-4">
+
+            <form th:action="@{/store/category/{slug}(slug=${categorySlug})}"
+                  method="get"
+                  class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-6">
+                    <label for="categoryKeyword" class="form-label">
+                        Pesquisar nesta categoria
+                    </label>
+
+                    <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                        <input type="search"
+                               id="categoryKeyword"
+                               name="keyword"
+                               class="form-control"
+                               placeholder="Digite o nome do produto..."
+                               th:value="${keyword}">
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label for="categorySort" class="form-label">
+                        Ordenar por
+                    </label>
+
+                    <select id="categorySort"
+                            name="sort"
+                            class="form-select">
+
+                        <option value="name_asc"
+                                th:selected="${sort == 'name_asc'}">
+                            Nome: A–Z
+                        </option>
+
+                        <option value="name_desc"
+                                th:selected="${sort == 'name_desc'}">
+                            Nome: Z–A
+                        </option>
+
+                        <option value="price_asc"
+                                th:selected="${sort == 'price_asc'}">
+                            Menor preço
+                        </option>
+
+                        <option value="price_desc"
+                                th:selected="${sort == 'price_desc'}">
+                            Maior preço
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        Filtrar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+
         <div class="category-empty" th:if="${#lists.isEmpty(products)}">
 
             <i class="bi bi-box-seam"></i>
 
-            <h3>Nenhum produto disponível</h3>
 
-            <p class="text-muted">
+            <h3 th:text="${keyword != null and !keyword.isEmpty()
+        ? 'Nenhum produto encontrado'
+        : 'Nenhum produto disponível'}">
+                Nenhum produto disponível
+            </h3>
+
+            <p class="text-muted"
+               th:text="${keyword != null and !keyword.isEmpty()
+        ? 'Não encontramos produtos correspondentes à sua pesquisa.'
+        : 'Ainda não temos produtos disponíveis nesta categoria.'}">
                 Ainda não temos produtos disponíveis nesta categoria.
             </p>
+
 
             <a th:href="@{/store/homepage}" class="btn btn-primary mt-2">
                 Voltar para a loja
@@ -128,6 +206,76 @@
                 </div>
             </div>
         </div>
+
+
+        <nav class="category-pagination mt-4"
+             aria-label="Paginação dos produtos"
+             th:if="${totalPages > 1}">
+
+            <ul class="pagination justify-content-center flex-wrap">
+
+                <li class="page-item"
+                    th:classappend="${currentPage == 0} ? 'disabled'">
+
+                    <a class="page-link"
+                       th:href="@{/store/category/{slug}(
+                   slug=${categorySlug},
+                   keyword=${keyword},
+                   sort=${sort},
+                   page=${currentPage - 1}
+               )}"
+                       th:attr="aria-label='Página anterior',
+                        aria-disabled=${currentPage == 0}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                <li class="page-item"
+                    th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${pageNumber == currentPage} ? 'active'">
+
+                    <a class="page-link"
+                       th:href="@{/store/category/{slug}(
+                   slug=${categorySlug},
+                   keyword=${keyword},
+                   sort=${sort},
+                   page=${pageNumber}
+               )}"
+                       th:text="${pageNumber + 1}"
+                       th:attr="aria-label=${'Página ' + (pageNumber + 1)},
+                        aria-current=${pageNumber == currentPage} ? 'page' : null">
+                        1
+                    </a>
+                </li>
+
+                <li class="page-item"
+                    th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+
+                    <a class="page-link"
+                       th:href="@{/store/category/{slug}(
+                   slug=${categorySlug},
+                   keyword=${keyword},
+                   sort=${sort},
+                   page=${currentPage + 1}
+               )}"
+                       th:attr="aria-label='Próxima página',
+                        aria-disabled=${currentPage == totalPages - 1}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+
+            <p class="text-center text-muted small mt-2">
+                Página
+                <span th:text="${currentPage + 1}">1</span>
+                de
+                <span th:text="${totalPages}">1</span>
+            </p>
+
+        </nav>
+
+
     </div>
 </main>
 

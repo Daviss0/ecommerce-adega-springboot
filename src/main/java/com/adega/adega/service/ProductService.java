@@ -4,6 +4,7 @@ import com.adega.adega.entity.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface ProductService {
 
@@ -16,4 +17,6 @@ public interface ProductService {
     List<Product> findHomepageFeaturedProducts();
 
     List<Product> searchProducts(String keyword);
+
+    Page<Product> findProductsByCategory(String category, String keyword, String sort, int page);
 }

@@ -19,6 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.mockito.ArgumentCaptor;
+
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
@@ -285,6 +291,287 @@ class ProductServiceImplTest {
     }
 
 
+    @Test
+    void deveUtilizarPaginaZeroComDozeProdutosEOrdenacaoPadrao() {
 
+        Page<Product> paginaSimulada = new PageImpl<>(List.of());
+
+        when(productRepository
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        any(Pageable.class)
+                ))
+                .thenReturn(paginaSimulada);
+
+        Page<Product> resultado = productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_asc",
+                0
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(productRepository)
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        pageableCaptor.capture()
+                );
+
+        Pageable pageable = pageableCaptor.getValue();
+
+        assertEquals(0, pageable.getPageNumber());
+        assertEquals(12, pageable.getPageSize());
+
+        Sort.Order ordenacao = pageable.getSort().getOrderFor("name");
+
+        assertNotNull(ordenacao);
+        assertEquals(Sort.Direction.ASC, ordenacao.getDirection());
+
+        assertSame(paginaSimulada, resultado);
+    }
+
+    @Test
+    void deveConverterPaginaNegativaParaZero() {
+
+        Page<Product> paginaSimulada = new PageImpl<>(List.of());
+
+        when(productRepository
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        any(Pageable.class)
+                ))
+                .thenReturn(paginaSimulada);
+
+        Page<Product> resultado = productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_asc",
+                -5
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(productRepository)
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        pageableCaptor.capture()
+                );
+
+        Pageable pageable = pageableCaptor.getValue();
+
+        assertEquals(0, pageable.getPageNumber());
+
+        assertEquals(12, pageable.getPageSize());
+
+        assertSame(paginaSimulada, resultado);
+    }
+
+    @Test
+    void deveOrdenarProdutosPorNomeCrescenteEDecrescente() {
+
+        Page<Product> paginaSimulada = new PageImpl<>(List.of());
+
+        when(productRepository
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        any(Pageable.class)
+                ))
+                .thenReturn(paginaSimulada);
+
+        productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_asc",
+                0
+        );
+
+        productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_desc",
+                0
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(productRepository, times(2))
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        pageableCaptor.capture()
+                );
+
+        Pageable pageableCrescente = pageableCaptor.getAllValues().get(0);
+        Pageable pageableDecrescente = pageableCaptor.getAllValues().get(1);
+
+        Sort.Order ordemCrescente =
+                pageableCrescente.getSort().getOrderFor("name");
+
+        assertNotNull(ordemCrescente);
+        assertEquals(
+                Sort.Direction.ASC,
+                ordemCrescente.getDirection()
+        );
+
+        Sort.Order ordemDecrescente =
+                pageableDecrescente.getSort().getOrderFor("name");
+
+        assertNotNull(ordemDecrescente);
+        assertEquals(
+                Sort.Direction.DESC,
+                ordemDecrescente.getDirection()
+        );
+
+        assertEquals(12, pageableCrescente.getPageSize());
+        assertEquals(12, pageableDecrescente.getPageSize());
+    }
+
+    @Test
+    void deveOrdenarProdutosPorPrecoCrescenteEDecrescente() {
+
+        Page<Product> paginaSimulada = new PageImpl<>(List.of());
+
+        when(productRepository
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        any(Pageable.class)
+                ))
+                .thenReturn(paginaSimulada);
+
+        productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "price_asc",
+                0
+        );
+
+        productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "price_desc",
+                0
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(productRepository, times(2))
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        pageableCaptor.capture()
+                );
+
+        Pageable pageableCrescente = pageableCaptor.getAllValues().get(0);
+        Pageable pageableDecrescente = pageableCaptor.getAllValues().get(1);
+
+        Sort.Order ordemCrescente =
+                pageableCrescente.getSort().getOrderFor("price");
+
+        assertNotNull(ordemCrescente);
+        assertEquals(
+                Sort.Direction.ASC,
+                ordemCrescente.getDirection()
+        );
+
+        Sort.Order ordemDecrescente =
+                pageableDecrescente.getSort().getOrderFor("price");
+
+        assertNotNull(ordemDecrescente);
+        assertEquals(
+                Sort.Direction.DESC,
+                ordemDecrescente.getDirection()
+        );
+
+        assertEquals(0, pageableCrescente.getPageNumber());
+        assertEquals(0, pageableDecrescente.getPageNumber());
+
+        assertEquals(12, pageableCrescente.getPageSize());
+        assertEquals(12, pageableDecrescente.getPageSize());
+
+
+        assertEquals(
+                "price",
+                pageableCrescente.getSort().iterator().next().getProperty()
+        );
+
+        assertEquals(
+                "price",
+                pageableDecrescente.getSort().iterator().next().getProperty()
+        );
+    }
+
+    @Test
+    void deveUtilizarOrdenacaoPadraoQuandoSortForInvalido() {
+
+        Page<Product> paginaSimulada = new PageImpl<>(List.of());
+
+        when(productRepository
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        any(Pageable.class)
+                ))
+                .thenReturn(paginaSimulada);
+
+        Page<Product> resultado = productService.findProductsByCategory(
+                "Cervejas",
+                "",
+                "qualquer_coisa",
+                0
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor =
+                ArgumentCaptor.forClass(Pageable.class);
+
+        verify(productRepository)
+                .findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                        eq(0),
+                        eq("Cervejas"),
+                        eq(""),
+                        pageableCaptor.capture()
+                );
+
+        Pageable pageable = pageableCaptor.getValue();
+
+        Sort.Order ordenacao =
+                pageable.getSort().getOrderFor("name");
+
+        assertNotNull(ordenacao);
+
+        assertEquals(
+                Sort.Direction.ASC,
+                ordenacao.getDirection()
+        );
+
+        assertEquals(
+                "name",
+                pageable.getSort().iterator().next().getProperty()
+        );
+
+        assertEquals(0, pageable.getPageNumber());
+        assertEquals(12, pageable.getPageSize());
+
+        assertSame(paginaSimulada, resultado);
+    }
 
 }

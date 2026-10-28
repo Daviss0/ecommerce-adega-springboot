@@ -1,35 +1,34 @@
+
 package com.adega.adega.controller;
 
 import com.adega.adega.controller.Client.StoreController;
+import com.adega.adega.dto.cart.CartDTO;
+import com.adega.adega.dto.cart.CartItemDTO;
 import com.adega.adega.entity.Product;
 import com.adega.adega.repository.ProductRepository;
-
 import com.adega.adega.service.CartService;
-import com.adega.adega.controller.Client.CartController;
-
-
 import com.adega.adega.service.ProductService;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import com.adega.adega.dto.cart.CartDTO;
-import com.adega.adega.dto.cart.CartItemDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.ui.Model;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.ui.Model;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class StoreControllerTest {
 
@@ -39,14 +38,26 @@ public class StoreControllerTest {
     private CartService cartService;
     private ProductService productService;
 
-
     @BeforeEach
     void setUp() {
+
         productRepository = mock(ProductRepository.class);
         model = mock(Model.class);
         cartService = mock(CartService.class);
+        productService = mock(ProductService.class);
 
-        storeController = new StoreController(productRepository,cartService, productService);
+        storeController = new StoreController(
+                productRepository,
+                cartService,
+                productService
+        );
+
+        when(productService.findProductsByCategory(
+                anyString(),
+                anyString(),
+                anyString(),
+                anyInt()
+        )).thenReturn(Page.empty());
     }
 
     @Test
@@ -59,18 +70,46 @@ public class StoreControllerTest {
 
         List<Product> produtos = List.of(cerveja);
 
-        when(productRepository.findByActiveTrueAndCategoryIgnoreCase("Cervejas"))
-                .thenReturn(produtos);
+        Page<Product> pagina = new PageImpl<>(produtos);
 
-        String view = storeController.category("cervejas", model, null);
+        when(productService.findProductsByCategory(
+                "Cervejas", "", "name_asc", 0
+        )).thenReturn(pagina);
+
+        String view = storeController.category(
+                "cervejas",
+                null,
+                "name_asc",
+                0,
+                model,
+                null
+        );
 
         assertEquals("client/category", view);
 
-        verify(model).addAttribute("categoryName", "Cervejas");
+        verify(model).addAttribute(
+                "categoryName", "Cervejas"
+        );
 
-        verify(model).addAttribute("products", produtos);
+        verify(model).addAttribute(
+                "products", produtos
+        );
 
-        verify(productRepository).findByActiveTrueAndCategoryIgnoreCase("Cervejas");
+        verify(model).addAttribute(
+                "currentPage", 0
+        );
+
+        verify(model).addAttribute(
+                "totalPages", 1
+        );
+
+        verify(model).addAttribute(
+                "totalProducts", 1L
+        );
+
+        verify(productService).findProductsByCategory(
+                "Cervejas", "", "name_asc", 0
+        );
     }
 
     @Test
@@ -80,7 +119,11 @@ public class StoreControllerTest {
                 ResponseStatusException.class,
                 () -> storeController.category(
                         "categoria-inexistente",
-                        model, null
+                        null,
+                        "name_asc",
+                        0,
+                        model,
+                        null
                 )
         );
 
@@ -91,16 +134,37 @@ public class StoreControllerTest {
 
         verifyNoInteractions(productRepository);
         verifyNoInteractions(model);
+
+        verify(productService, never())
+                .findProductsByCategory(
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyInt()
+                );
     }
 
     @Test
     void deveRetornarListaVaziaParaCategoriaSemProdutos() {
 
-        when(productRepository
-                .findByActiveTrueAndCategoryIgnoreCase("Gins"))
-                .thenReturn(List.of());
+        Page<Product> paginaVazia = new PageImpl<>(
+                List.of(),
+                PageRequest.of(0, 12),
+                0
+        );
 
-        String view = storeController.category("gins", model, null);
+        when(productService.findProductsByCategory(
+                "Gins", "", "name_asc", 0
+        )).thenReturn(paginaVazia);
+
+        String view = storeController.category(
+                "gins",
+                null,
+                "name_asc",
+                0,
+                model,
+                null
+        );
 
         assertEquals("client/category", view);
 
@@ -114,8 +178,19 @@ public class StoreControllerTest {
                 List.of()
         );
 
-        verify(productRepository)
-                .findByActiveTrueAndCategoryIgnoreCase("Gins");
+        verify(model).addAttribute(
+                "totalPages",
+                0
+        );
+
+        verify(model).addAttribute(
+                "totalProducts",
+                0L
+        );
+
+        verify(productService).findProductsByCategory(
+                "Gins", "", "name_asc", 0
+        );
     }
 
     @Test
@@ -127,7 +202,7 @@ public class StoreControllerTest {
 
         List<Product> produtos = List.of(produto);
 
-        when(productRepository.findByActiveTrue())
+        when(productService.findHomepageFeaturedProducts())
                 .thenReturn(produtos);
 
         String view = storeController.home(model, null);
@@ -139,10 +214,12 @@ public class StoreControllerTest {
                 produtos
         );
 
-        verify(productRepository).findByActiveTrue();
+        verify(productService).findHomepageFeaturedProducts();
 
         verify(productRepository, never())
-                .findByActiveTrueAndCategoryIgnoreCase(anyString());
+                .findByActiveTrueAndCategoryIgnoreCase(
+                        anyString()
+                );
     }
 
     @Test
@@ -152,7 +229,9 @@ public class StoreControllerTest {
                 new UsernamePasswordAuthenticationToken(
                         "cliente@email.com",
                         "senha",
-                        List.of(new SimpleGrantedAuthority("ROLE_CLIENT"))
+                        List.of(
+                                new SimpleGrantedAuthority("ROLE_CLIENT")
+                        )
                 );
 
         CartItemDTO item1 = new CartItemDTO();
@@ -171,7 +250,14 @@ public class StoreControllerTest {
 
         Model model = mock(Model.class);
 
-        storeController.category("cervejas", model, authentication);
+        storeController.category(
+                "cervejas",
+                null,
+                "name_asc",
+                0,
+                model,
+                authentication
+        );
 
         verify(model).addAttribute(
                 eq("quantitiesByProductId"),
@@ -188,7 +274,9 @@ public class StoreControllerTest {
                 new UsernamePasswordAuthenticationToken(
                         "cliente@email.com",
                         "senha",
-                        List.of(new SimpleGrantedAuthority("ROLE_CLIENT"))
+                        List.of(
+                                new SimpleGrantedAuthority("ROLE_CLIENT")
+                        )
                 );
 
         CartDTO cart = new CartDTO();
@@ -199,12 +287,21 @@ public class StoreControllerTest {
 
         Model model = mock(Model.class);
 
-        storeController.category("cervejas", model, authentication);
+        storeController.category(
+                "cervejas",
+                null,
+                "name_asc",
+                0,
+                model,
+                authentication
+        );
 
         verify(model).addAttribute(
                 eq("quantitiesByProductId"),
                 eq(Map.of())
         );
+
+        verify(cartService).getCart("cliente@email.com");
     }
 
     @Test
@@ -212,7 +309,14 @@ public class StoreControllerTest {
 
         Model model = mock(Model.class);
 
-        storeController.category("cervejas", model, null);
+        storeController.category(
+                "cervejas",
+                null,
+                "name_asc",
+                0,
+                model,
+                null
+        );
 
         verifyNoInteractions(cartService);
 
@@ -229,12 +333,21 @@ public class StoreControllerTest {
                 new UsernamePasswordAuthenticationToken(
                         "admin@email.com",
                         "senha",
-                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                        List.of(
+                                new SimpleGrantedAuthority("ROLE_ADMIN")
+                        )
                 );
 
         Model model = mock(Model.class);
 
-        storeController.category("cervejas", model, authentication);
+        storeController.category(
+                "cervejas",
+                null,
+                "name_asc",
+                0,
+                model,
+                authentication
+        );
 
         verifyNoInteractions(cartService);
 
@@ -244,25 +357,24 @@ public class StoreControllerTest {
         );
     }
 
-
     @Test
     void deveCarregarQuantidadesDoCarrinhoNaHomepage() {
-
 
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         "cliente@email.com",
                         "senha",
-                        List.of(new SimpleGrantedAuthority("ROLE_CLIENT"))
+                        List.of(
+                                new SimpleGrantedAuthority("ROLE_CLIENT")
+                        )
                 );
-
 
         Product produto = new Product();
         produto.setId(1L);
         produto.setName("Cerveja Heineken");
         produto.setActive(true);
 
-        when(productRepository.findByActiveTrue())
+        when(productService.findHomepageFeaturedProducts())
                 .thenReturn(List.of(produto));
 
         CartItemDTO item = new CartItemDTO();
@@ -275,7 +387,10 @@ public class StoreControllerTest {
         when(cartService.getCart("cliente@email.com"))
                 .thenReturn(cart);
 
-        String view = storeController.home(model, authentication);
+        String view = storeController.home(
+                model,
+                authentication
+        );
 
         assertEquals("client/homepage", view);
 
@@ -292,6 +407,217 @@ public class StoreControllerTest {
         verify(cartService).getCart("cliente@email.com");
     }
 
+    @Test
+    void deveEnviarDadosDaPaginacaoParaOTemplate() {
 
+        Product produto = new Product();
+        produto.setId(1L);
+        produto.setName("Cerveja Teste");
+        produto.setCategory("Cervejas");
+        produto.setActive(true);
+        produto.setStock(10);
 
+        Pageable pageable = PageRequest.of(1, 12);
+
+        Page<Product> paginaSimulada = new PageImpl<>(
+                List.of(produto),
+                pageable,
+                25
+        );
+
+        when(productService.findProductsByCategory(
+                eq("Cervejas"),
+                eq(""),
+                eq("name_asc"),
+                eq(1)
+        )).thenReturn(paginaSimulada);
+
+        String view = storeController.category(
+                "cervejas",
+                "",
+                "name_asc",
+                1,
+                model,
+                null
+        );
+
+        assertEquals("client/category", view);
+
+        verify(productService).findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_asc",
+                1
+        );
+
+        verify(model).addAttribute("currentPage", 1);
+        verify(model).addAttribute("totalPages", 3);
+        verify(model).addAttribute("totalProducts", 25L);
+
+        verify(model).addAttribute(
+                "products",
+                paginaSimulada.getContent()
+        );
+
+        verify(model).addAttribute("categoryName", "Cervejas");
+        verify(model).addAttribute("sort", "name_asc");
+    }
+
+    @Test
+    void devePreservarPesquisaDurantePaginacao() {
+
+        Product produto = new Product();
+        produto.setId(1L);
+        produto.setName("Heineken Long Neck");
+        produto.setCategory("Cervejas");
+        produto.setActive(true);
+        produto.setStock(10);
+
+        Pageable pageable = PageRequest.of(1, 12);
+
+        Page<Product> paginaSimulada = new PageImpl<>(
+                List.of(produto),
+                pageable,
+                13
+        );
+
+        when(productService.findProductsByCategory(
+                eq("Cervejas"),
+                eq("Heineken"),
+                eq("name_asc"),
+                eq(1)
+        )).thenReturn(paginaSimulada);
+
+        String view = storeController.category(
+                "cervejas",
+                "Heineken",
+                "name_asc",
+                1,
+                model,
+                null
+        );
+
+        assertEquals("client/category", view);
+
+        verify(productService).findProductsByCategory(
+                "Cervejas",
+                "Heineken",
+                "name_asc",
+                1
+        );
+
+        verify(model).addAttribute("keyword", "Heineken");
+
+        verify(model).addAttribute("currentPage", 1);
+        verify(model).addAttribute("totalPages", 2);
+        verify(model).addAttribute("totalProducts", 13L);
+
+        verify(model).addAttribute(
+                "products",
+                paginaSimulada.getContent()
+        );
+
+        verify(model).addAttribute("sort", "name_asc");
+    }
+
+    @Test
+    void devePreservarOrdenacaoDurantePaginacao() {
+
+        Product produto = new Product();
+        produto.setId(1L);
+        produto.setName("Whisky Teste");
+        produto.setCategory("Cervejas");
+        produto.setActive(true);
+        produto.setStock(10);
+
+        Pageable pageable = PageRequest.of(1, 12);
+
+        Page<Product> paginaSimulada = new PageImpl<>(
+                List.of(produto),
+                pageable,
+                13
+        );
+
+        when(productService.findProductsByCategory(
+                eq("Cervejas"),
+                eq(""),
+                eq("price_desc"),
+                eq(1)
+        )).thenReturn(paginaSimulada);
+
+        String view = storeController.category(
+                "cervejas",
+                "",
+                "price_desc",
+                1,
+                model,
+                null
+        );
+
+        assertEquals("client/category", view);
+
+        verify(productService).findProductsByCategory(
+                "Cervejas",
+                "",
+                "price_desc",
+                1
+        );
+
+        verify(model).addAttribute("sort", "price_desc");
+
+        verify(model).addAttribute("currentPage", 1);
+        verify(model).addAttribute("totalPages", 2);
+        verify(model).addAttribute("totalProducts", 13L);
+
+        verify(model).addAttribute(
+                "products",
+                paginaSimulada.getContent()
+        );
+    }
+
+    @Test
+    void deveUtilizarOrdenacaoPadraoQuandoSortForInvalido() {
+
+        Page<Product> paginaSimulada = new PageImpl<>(
+                List.of(),
+                PageRequest.of(0, 12),
+                0
+        );
+
+        when(productService.findProductsByCategory(
+                eq("Cervejas"),
+                eq(""),
+                eq("name_asc"),
+                eq(0)
+        )).thenReturn(paginaSimulada);
+
+        String view = storeController.category(
+                "cervejas",
+                "",
+                "ordenacao_inexistente",
+                0,
+                model,
+                null
+        );
+
+        assertEquals("client/category", view);
+
+        verify(productService).findProductsByCategory(
+                "Cervejas",
+                "",
+                "name_asc",
+                0
+        );
+
+        verify(model).addAttribute("sort", "name_asc");
+
+        verify(model).addAttribute("currentPage", 0);
+        verify(model).addAttribute("totalPages", 0);
+        verify(model).addAttribute("totalProducts", 0L);
+
+        verify(model).addAttribute(
+                "products",
+                paginaSimulada.getContent()
+        );
+    }
 }

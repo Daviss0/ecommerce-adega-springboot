@@ -18,6 +18,11 @@ import java.util.Set;
 import java.util.HashSet;
 import java.text.Collator;
 import java.util.Locale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 
 import java.io.IOException;
 
@@ -159,6 +164,41 @@ public class ProductServiceImpl implements ProductService {
         String normalizedKeyword = keyword.trim();
 
         return productRepository.findByActiveTrueAndStockGreaterThanAndNameContainingIgnoreCaseOrderByNameAsc(0, normalizedKeyword);
+    }
+
+    @Override
+    public Page<Product> findProductsByCategory(String category, String keyword, String sort, int page) {
+
+        final int PAGE_SIZE = 12;
+
+        int validPage = Math.max(page, 0);
+
+        String normalizedKeyword = keyword == null ? "" : keyword.trim();
+
+        Sort sorting = switch (sort == null ? "" : sort) {
+
+            case "name_desc" -> JpaSort.unsafe(
+                    Sort.Direction.DESC, "LOWER(name)"
+            ).and(Sort.by("id"));
+
+            case "price_asc" -> Sort.by(
+                    Sort.Direction.ASC, "price"
+            ).and(Sort.by("id"));
+
+            case "price_desc" -> Sort.by(
+                    Sort.Direction.DESC, "price"
+            ).and(Sort.by("id"));
+
+            default -> JpaSort.unsafe(
+                    Sort.Direction.ASC, "LOWER(name)"
+            ).and(Sort.by("id"));
+        };
+
+        Pageable pageable = PageRequest.of(validPage, PAGE_SIZE, sorting);
+
+        return productRepository.findByActiveTrueAndStockGreaterThanAndCategoryIgnoreCaseAndNameContainingIgnoreCase(
+                0, category, normalizedKeyword, pageable
+        );
     }
 
 
