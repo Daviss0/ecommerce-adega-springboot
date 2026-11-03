@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -80,9 +79,6 @@ public class SecurityConfig {
         http
                 .authenticationProvider(clientAuthenticationProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PathRequest.toH2Console())
-                        .permitAll()
-
                         .requestMatchers(
                                 "/",
                                 "/store/**",
@@ -121,15 +117,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
                         .permitAll()
-                )
 
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(PathRequest.toH2Console()
-                        )
-                )
-
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
                 );
         return http.build();
     }

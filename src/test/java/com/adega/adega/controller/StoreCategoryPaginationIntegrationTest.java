@@ -6,7 +6,7 @@ import com.adega.adega.entity.Product;
 import com.adega.adega.repository.ProductRepository;
 import com.adega.adega.service.CartService;
 import com.adega.adega.service.ProductService;
-
+import org.springframework.test.context.ActiveProfiles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StoreController.class)
+@ActiveProfiles("test")
 class StoreCategoryPaginationIntegrationTest {
 
     @Autowired

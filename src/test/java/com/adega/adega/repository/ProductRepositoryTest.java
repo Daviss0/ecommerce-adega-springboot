@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.ui.Model;
 
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
+@ActiveProfiles("test")
 public class ProductRepositoryTest {
 
     @Autowired

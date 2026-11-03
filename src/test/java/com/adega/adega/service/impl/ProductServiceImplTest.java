@@ -328,7 +328,7 @@ class ProductServiceImplTest {
         assertEquals(0, pageable.getPageNumber());
         assertEquals(12, pageable.getPageSize());
 
-        Sort.Order ordenacao = pageable.getSort().getOrderFor("name");
+        Sort.Order ordenacao = pageable.getSort().getOrderFor("LOWER(name)");
 
         assertNotNull(ordenacao);
         assertEquals(Sort.Direction.ASC, ordenacao.getDirection());
@@ -420,7 +420,7 @@ class ProductServiceImplTest {
         Pageable pageableDecrescente = pageableCaptor.getAllValues().get(1);
 
         Sort.Order ordemCrescente =
-                pageableCrescente.getSort().getOrderFor("name");
+                pageableCrescente.getSort().getOrderFor("LOWER(name)");
 
         assertNotNull(ordemCrescente);
         assertEquals(
@@ -429,7 +429,7 @@ class ProductServiceImplTest {
         );
 
         Sort.Order ordemDecrescente =
-                pageableDecrescente.getSort().getOrderFor("name");
+                pageableDecrescente.getSort().getOrderFor("LOWER(name)");
 
         assertNotNull(ordemDecrescente);
         assertEquals(
@@ -554,7 +554,7 @@ class ProductServiceImplTest {
         Pageable pageable = pageableCaptor.getValue();
 
         Sort.Order ordenacao =
-                pageable.getSort().getOrderFor("name");
+                pageable.getSort().getOrderFor("LOWER(name)");
 
         assertNotNull(ordenacao);
 
@@ -564,7 +564,7 @@ class ProductServiceImplTest {
         );
 
         assertEquals(
-                "name",
+                "LOWER(name)",
                 pageable.getSort().iterator().next().getProperty()
         );
 

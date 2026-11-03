@@ -2396,3 +2396,21 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/projetos/Adeg
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:291)
 	... 63 more
+2026-10-27 21:18:44.350233-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT\000d\000a    id,\000d\000a    '[' || LOWER(name) || ']' AS nome,\000d\000a    LENGTH(LOWER(name)) AS tamanho\000d\000aFROM products\000d\000aWHERE LOWER(category) = 'cervejas'\000d\000aORDER BY LOWER(name) [*]COLLATE OFF, id"; SQL statement:
+SELECT
+    id,
+    '[' || LOWER(name) || ']' AS nome,
+    LENGTH(LOWER(name)) AS tamanho
+FROM products
+WHERE LOWER(category) = 'cervejas'
+ORDER BY LOWER(name) COLLATE OFF, id [42000-240]
+2026-10-27 21:19:04.225966-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT\000d\000a    id,\000d\000a    '[' || LOWER(name) || ']' AS nome,\000d\000a    LENGTH(LOWER(name)) AS tamanho\000d\000aFROM products\000d\000aWHERE LOWER(category) = 'cervejas'\000d\000aORDER BY LOWER(name) [*]COLLATE OFF, id"; SQL statement:
+SELECT
+    id,
+    '[' || LOWER(name) || ']' AS nome,
+    LENGTH(LOWER(name)) AS tamanho
+FROM products
+WHERE LOWER(category) = 'cervejas'
+ORDER BY LOWER(name) COLLATE OFF, id [42000-240]

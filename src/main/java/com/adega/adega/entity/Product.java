@@ -2,7 +2,8 @@ package com.adega.adega.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 
 @Entity
@@ -40,8 +41,8 @@ public class Product {
     @Column(name = "image_path")
     private String imagePath;
 
-    @Lob
-    @Column(name = "image_data", columnDefinition = "LONGBLOB")
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    @Column(name = "image_data")
     private byte[] imageData;
 
     @NotNull(message = "O status do produto é obrigatório")
